@@ -22,7 +22,6 @@ const LogInPage = () => {
     const updateUser = (eventHTML) => {
         const { name, value } = eventHTML.target;
         setUser({ ...user, [name]: value });
-        console.log(user)
     };
 
     return (

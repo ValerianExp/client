@@ -17,7 +17,6 @@ class UserAxios extends InitAxios {
         if (!this.instance) {
             this.instance = new UserAxios();
         }
-        console.log(this.instance);
         return this.instance;
     }
 

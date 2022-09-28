@@ -2,10 +2,14 @@ import { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import authAxios from '../services/authAxios';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 
 const SignUpPage = () => {
     const [newUser, setNewUser] = useState({});
     const navigate = useNavigate()
+
+    console.log('User', newUser)
 
 
     const createNewUser = (eventHTML) => {
@@ -22,38 +26,72 @@ const SignUpPage = () => {
         setNewUser({ ...newUser, [name]: value });
     };
 
+    const handleOnCheck = (eventHTLM) => {
+        if (eventHTLM.target.checked) {
+            setNewUser({ ...newUser, role: 'DRIVER' })
+        } else {
+            setNewUser({ ...newUser, role: 'CLIENT', carModel: undefined })
+
+        }
+    }
+
     return (
+        // TODO: avatar and carmodel
         <Form onSubmit={createNewUser}>
             <Form.Group className='mb-3' >
                 <Form.Label>Username</Form.Label>
                 <Form.Control
                     name='username'
-                    onChange={updateNewUser}
                     type='text'
                     placeholder='username'
+                    onChange={updateNewUser}
                 />
             </Form.Group>
             <Form.Group className='mb-3' >
                 <Form.Label>Email</Form.Label>
                 <Form.Control
+                    name='email'
                     type='text'
                     placeholder='pepe@pepe.com'
                     onChange={updateNewUser}
-                    name='email'
                 />
             </Form.Group>
             <Form.Group className='mb-3' >
                 <Form.Label>Password</Form.Label>
                 <Form.Control
-                    type='password'
                     name='password'
+                    type='password'
+                    placeholder='Password'
                     onChange={updateNewUser}
                 />
             </Form.Group>
+
+            <Form.Group className='mb-3' >
+                <Form.Label>Are you a driver? </Form.Label>
+                <input
+                    type="checkbox"
+                    onChange={handleOnCheck}
+                />
+            </Form.Group>
+
+
+            {newUser?.role === 'DRIVER' && <Form.Group className='mb-3' >
+                <Form.Label>Car model</Form.Label>
+                <Form.Control
+                    name='carModel'
+                    type='text'
+                    placeholder='Car Model'
+                    onChange={updateNewUser}
+                />
+            </Form.Group>}
+
+
+
+
             <Button variant='primary' type='submit'>
                 Sign Up
             </Button>
-        </Form>
+        </Form >
     );
 };
 

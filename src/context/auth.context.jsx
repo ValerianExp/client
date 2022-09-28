@@ -32,7 +32,7 @@ export const AuthProvider = (props) => {
                     setUser(user);
                     setIsLoading(false);
                     setIsLoggedIn(true);
-                    navigate('/home');
+                    navigate('/');
                 })
                 .catch((err) => {
                     console.log(err);

@@ -10,7 +10,6 @@ class AuthAxios extends InitAxios {
     }
 
     login(body) {
-        console.log(body)
         return this.axios.post('/login', body).then((response) => response.data)
     }
 
@@ -18,7 +17,6 @@ class AuthAxios extends InitAxios {
         if (!this.instance) {
             this.instance = new AuthAxios();
         }
-        console.log(this.instance);
         return this.instance;
     }
 }

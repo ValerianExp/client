@@ -20,6 +20,9 @@ const NavBarComponent = () => {
                         <Nav.Link as='span'>
                             <Link to='/login'>Log In</Link>
                         </Nav.Link>
+                        <Nav.Link as='span'>
+                            <Link to='/profile'>Profile</Link>
+                        </Nav.Link>
                         <Nav.Link as='span' onClick={() => logOut()}>
                             Log Out
                         </Nav.Link>
