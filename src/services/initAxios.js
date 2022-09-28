@@ -3,7 +3,7 @@ import axios from 'axios';
 class InitAxios {
     constructor(path) {
         this.axios = axios.create({
-            baseURL: `http://localhost:5005/api${path}`
+            baseURL: `${process.env.REACT_APP_BASE_URL}${path}`
         })
     }
 }
