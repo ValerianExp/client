@@ -6,18 +6,23 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './context/auth.context';
 import { PositionPairWrapper } from './context/positionPair.context';
+import { ChakraProvider, theme } from '@chakra-ui/react'
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  //<React.StrictMode>
+  // TODO el strict mode con los markers cacota
+  // <React.StrictMode>
   <Router>
     <AuthProvider>
-      <PositionPairWrapper>
-        <App />
-      </PositionPairWrapper>
+      <ChakraProvider theme={theme}>
+        <PositionPairWrapper>
+          <App />
+        </PositionPairWrapper>
+      </ChakraProvider>
     </AuthProvider>
   </Router>
-  //</React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
