@@ -19,12 +19,10 @@ import {
     DirectionsRenderer,
 } from '@react-google-maps/api'
 import { useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom';
+import tripAxios from '../../services/tripAxios'
 
 
 const MapAndSearch = () => {
-    console.log('MAPA')
-
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries: ['places']
@@ -53,9 +51,6 @@ const MapAndSearch = () => {
         )
     }
 
-
-
-
     /** @type React.MutableRefObject<HTMLInputElement> */
     const originRef = useRef()
     /** @type React.MutableRefObject<HTMLInputElement> */
@@ -82,7 +77,7 @@ const MapAndSearch = () => {
         setDuration(results.routes[0].legs[0].duration.text)
     }
 
-    function clearRoute() {
+    const clearRoute = () => {
         setDirectionsResponse(null)
         setDistance('')
         setDuration('')
@@ -96,14 +91,12 @@ const MapAndSearch = () => {
         originRef.current.value = `${center.lat}, ${center.lng}`
     }
 
+    const requestTrip = () => {
+        console.log(originRef)
+    }
+
     return (
-        // <Flex
-        //     position='relative'
-        //     flexDirection='column'
-        //     alignItems='center'
-        //     h='100vh'
-        //     w='100vw'
-        // >
+
         <>
             <div>
                 <Autocomplete onPlaceChanged={calculateRoute}>
@@ -126,14 +119,10 @@ const MapAndSearch = () => {
                     Clear Route
                 </Button>
 
-                <Button onClick={calculateRoute}>
-                    Calculate Route
-                </Button>
-
                 <p>{distance}</p>
                 <p>{duration}</p>
 
-                <Button>
+                <Button onClick={requestTrip}>
                     Request Trip
                 </Button>
 
@@ -160,57 +149,7 @@ const MapAndSearch = () => {
                 </GoogleMap>
             </div>
         </>
-        //  <Box
-        //     p={4}
-        //     borderRadius='lg'
-        //     m={4}
-        //     bgColor='white'
-        //     shadow='base'
-        //     minW='container.md'
-        //     zIndex='1'
-        // >
-        //     <HStack spacing={2} justifyContent='space-between'>
-        //         <Box flexGrow={1}>
-        //             <Autocomplete>
-        //                 <Input type='text' placeholder='Origin' ref={originRef} />
-        //             </Autocomplete>
-        //         </Box>
-        //         <Box flexGrow={1}>
-        //             <Autocomplete>
-        //                 <Input
-        //                     type='text'
-        //                     placeholder='Destination'
-        //                     ref={destiantionRef}
-        //                 />
-        //             </Autocomplete>
-        //         </Box>
 
-        //         <ButtonGroup>
-        //             <Button colorScheme='pink' type='submit' onClick={calculateRoute}>
-        //                 Calculate Route
-        //             </Button>
-        //             <IconButton
-        //                 aria-label='center back'
-        //                 icon={<FaTimes />}
-        //                 onClick={clearRoute}
-        //             />
-        //         </ButtonGroup>
-        //     </HStack>
-        //     <HStack spacing={4} mt={4} justifyContent='space-between'>
-        //         <Text>Distance: {distance} </Text>
-        //         <Text>Duration: {duration} </Text>
-        //         <IconButton
-        //             aria-label='center back'
-        //             icon={<FaLocationArrow />}
-        //             isRound
-        //             onClick={() => {
-        //                 map.panTo(center)
-        //                 map.setZoom(15)
-        //             }}
-        //         />
-        //     </HStack>
-        // </Box>
-        // </Flex>
     )
 
 }
