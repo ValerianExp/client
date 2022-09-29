@@ -12,7 +12,7 @@ import { ChakraProvider, theme } from '@chakra-ui/react'
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // TODO el strict mode con los markers cacota
-  // <React.StrictMode>
+  //<React.StrictMode>
   <Router>
     <AuthProvider>
       <ChakraProvider theme={theme}>
@@ -22,7 +22,7 @@ root.render(
       </ChakraProvider>
     </AuthProvider>
   </Router>
-  // </React.StrictMode>
+  //</React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
