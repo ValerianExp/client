@@ -1,11 +1,12 @@
+import InitAxios from "./initAxios";
 
-class TripAxios {
+class TripAxios extends InitAxios {
     constructor() {
         super('/trip')
     }
 
     newtrip(body) {
-        return this.axios.post('/all', body).then((response) => response.data)
+        return this.axios.post('/new', body).then((response) => response.data)
     }
 
     static getInstance() {
