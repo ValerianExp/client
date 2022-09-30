@@ -35,6 +35,14 @@ const SignUpPage = () => {
         }
     }
 
+    const updateNewUserPhoto = e => {
+        const formData = new FormData();
+        formData.append('avatar', e.target.files[0]);
+        // console.log(e.target.files[0]);
+        updateNewUser({ target: { name: 'avatar', value: formData.get('avatar') } });
+        // authAxios.uploadPhoto(formData)
+    }
+
     return (
         // TODO: avatar and carmodel
         <Form onSubmit={createNewUser}>
@@ -74,6 +82,14 @@ const SignUpPage = () => {
                 />
             </Form.Group>
 
+            <Form.Group className='mb-3' >
+                <Form.Label>ImageProfile</Form.Label>
+                <Form.Control
+                    type='file'
+                    name='avatar'
+                    onChange={updateNewUser}
+                />
+            </Form.Group>
 
             {newUser?.role === 'DRIVER' && <Form.Group className='mb-3' >
                 <Form.Label>Car model</Form.Label>
