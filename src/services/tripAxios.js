@@ -6,7 +6,7 @@ class TripAxios extends InitAxios {
     }
 
     newtrip(body) {
-        return this.axios.post('/all', body).then((response) => response.data)
+        return this.axios.post('/new', body).then((response) => response.data)
     }
 
     getAllTrips({ latDriver, lngDriver, maxDistance }) {

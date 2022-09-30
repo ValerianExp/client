@@ -18,8 +18,14 @@ import {
     Autocomplete,
     DirectionsRenderer,
 } from '@react-google-maps/api'
-import { useEffect, useRef, useState } from 'react'
+
+
+import { useContext, useEffect, useRef, useState } from 'react'
 import tripAxios from '../../services/tripAxios'
+import addressToCoords from '../../utils/addressToCoords'
+import coordsToAddress from '../../utils/coordsToAddress'
+import { AuthContext } from '../../context/auth.context'
+
 
 
 const MapAndSearch = () => {
@@ -28,11 +34,19 @@ const MapAndSearch = () => {
         libraries: ['places']
     })
 
+
     const [map, setMap] = useState(/** @type google.maps.Map */(null))
     const [directionsResponse, setDirectionsResponse] = useState(null)
     const [distance, setDistance] = useState('')
     const [duration, setDuration] = useState('')
     const [center, setCenter] = useState({ lat: 48.8584, lng: 2.2945 })
+
+    const [origin, setOrigin] = useState(null)
+
+    const [destination, setDestination] = useState(null)
+
+    const { user } = useContext(AuthContext)
+
 
     useEffect(() => {
         CenterMap()
@@ -41,14 +55,13 @@ const MapAndSearch = () => {
     const CenterMap = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                // console.log("Latitude is :", position.coords.latitude);
-                // console.log("Longitude is :", position.coords.longitude);
                 const lat = position.coords.latitude
                 const lng = position.coords.longitude
-                // console.log(lat)
                 setCenter({ lat, lng })
+                console.log({ lat, lng })
             }
         )
+        // console.log(lat, lng)
     }
 
     /** @type React.MutableRefObject<HTMLInputElement> */
@@ -72,6 +85,14 @@ const MapAndSearch = () => {
             // eslint-disable-next-line no-undef
             travelMode: google.maps.TravelMode.DRIVING,
         })
+        const placeIdOrigin = results.geocoded_waypoints[0].place_id
+        const placeIdDest = results.geocoded_waypoints[1].place_id
+        const originCoords = await addressToCoords(placeIdOrigin)
+        const destinationCoords = await addressToCoords(placeIdDest)
+
+        setOrigin(originCoords)
+        setDestination(destinationCoords)
+
         setDirectionsResponse(results)
         setDistance(results.routes[0].legs[0].distance.text)
         setDuration(results.routes[0].legs[0].duration.text)
@@ -86,19 +107,39 @@ const MapAndSearch = () => {
     }
 
     const setOriginLocation = () => {
-        console.log(center.lat)
-        console.log(originRef.current.value)
         originRef.current.value = `${center.lat}, ${center.lng}`
     }
 
     const requestTrip = () => {
-        console.log(originRef)
+        if (origin && destination) {
+            const newtrip = {
+                from_lat: origin.lat,
+                from_lng: origin.lng,
+                to_lat: destination.lat,
+                to_lng: destination.lng,
+                client: user._id,
+                price: Math.round(parseInt(distance))
+            }
+            coordsToAddress([destination.lat, destination.lng])
+                .then((res) => console.log(res))
+                .catch((err) => console.log(err))
+
+            tripAxios.newtrip(newtrip)
+                .then(() => console.log('Trip created'))
+                .catch((err) => console.log(err))
+        } else {
+            console.log('No puedes pedir un viaje sin origen ni destino')
+        }
     }
+
+
+
+
 
     return (
 
         <>
-            <div>
+            <div className='text-center'>
                 <Autocomplete onPlaceChanged={calculateRoute}>
                     <input type="text" placeholder='Origin' ref={originRef} />
                 </Autocomplete>
@@ -119,8 +160,13 @@ const MapAndSearch = () => {
                     Clear Route
                 </Button>
 
-                <p>{distance}</p>
-                <p>{duration}</p>
+                {duration ? <>
+
+                    <p>DURATION: {duration}</p>
+                    <p>PRICE: {Math.round(parseInt(distance))} </p>
+                </> : null
+                }
+
 
                 <Button onClick={requestTrip}>
                     Request Trip

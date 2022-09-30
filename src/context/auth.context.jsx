@@ -12,6 +12,7 @@ export const AuthProvider = (props) => {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState(null);
 
+
     const navigate = useNavigate();
 
     const storeToken = (token) => {
