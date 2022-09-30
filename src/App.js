@@ -5,6 +5,7 @@ import HomePage from './pages/HomePages/HomePage';
 import LogInPage from './pages/LogInPage';
 import SignUpPage from './pages/SignUpPage';
 import ProfilePage from './pages/ProfilePage';
+import OnTripPage from './pages/OnTripPage';
 
 
 
@@ -19,6 +20,7 @@ function App() {
         <Route path='/login' element={<LogInPage />} />
         <Route path='/login' element={<LogInPage />} />
         <Route path='/profile' element={<ProfilePage />} />
+        <Route path='/trip/:id' element={<OnTripPage />} />
       </Routes>
     </div>
   );

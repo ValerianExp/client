@@ -13,8 +13,16 @@ class TripAxios extends InitAxios {
         return this.axios.get(`/all?latDriver=${latDriver}&lngDriver=${lngDriver}&maxDistance=${maxDistance}`).then((response) => response.data).catch((error) => console.log(error));
     }
 
-    setClientToTrip(idTrip) {
-        return this.axios.put()
+    setDriver(idTrip, driverId) {
+        return this.axios.put(`/${idTrip}/driver?driverId=${driverId}`).then((response) => response.data)
+    }
+
+    getTrip(tripId) {
+        return this.axios.get(`/${tripId}`).then((response) => response.data)
+    }
+
+    finishTrip(tripId) {
+        return this.axios.put(`/${tripId}/finish`).then((response) => response.data)
     }
 
     static getInstance() {

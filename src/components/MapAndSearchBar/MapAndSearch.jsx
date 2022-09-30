@@ -25,6 +25,7 @@ import tripAxios from '../../services/tripAxios'
 import addressToCoords from '../../utils/addressToCoords'
 import coordsToAddress from '../../utils/coordsToAddress'
 import { AuthContext } from '../../context/auth.context'
+import { useNavigate } from 'react-router-dom'
 
 
 
@@ -33,6 +34,8 @@ const MapAndSearch = () => {
         googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
         libraries: ['places']
     })
+
+    const navigate = useNavigate()
 
 
     const [map, setMap] = useState(/** @type google.maps.Map */(null))
@@ -125,7 +128,10 @@ const MapAndSearch = () => {
                 .catch((err) => console.log(err))
 
             tripAxios.newtrip(newtrip)
-                .then(() => console.log('Trip created'))
+                .then((trip) => {
+                    console.log('Trip created')
+                    navigate(`/trip/${trip._id}`)
+                })
                 .catch((err) => console.log(err))
         } else {
             console.log('No puedes pedir un viaje sin origen ni destino')

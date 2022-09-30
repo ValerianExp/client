@@ -33,7 +33,6 @@ export const AuthProvider = (props) => {
                     setUser(user);
                     setIsLoading(false);
                     setIsLoggedIn(true);
-                    navigate('/');
                 })
                 .catch((err) => {
                     console.log(err);
@@ -51,6 +50,8 @@ export const AuthProvider = (props) => {
     const logOut = () => {
         destroyToken();
         authentication();
+        navigate('/')
+
     }
 
     useEffect(() => {

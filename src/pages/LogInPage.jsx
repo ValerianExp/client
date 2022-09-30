@@ -16,6 +16,7 @@ const LogInPage = () => {
         authAxios.login(user).then((response) => {
             storeToken(response.token);
             authentication();
+            navigate('/')
         })
     };
 
