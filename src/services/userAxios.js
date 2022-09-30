@@ -17,6 +17,8 @@ class UserAxios extends InitAxios {
         return this.instance;
     }
 
+
+
 }
 
 export default UserAxios.getInstance();
