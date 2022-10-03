@@ -7,6 +7,8 @@ import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 
 const SignUpPage = () => {
     const [newUser, setNewUser] = useState({});
+    const [userFormData, setUserFormData] = useState(new FormData());
+
     const navigate = useNavigate()
 
     console.log('User', newUser)
@@ -14,15 +16,26 @@ const SignUpPage = () => {
 
     const createNewUser = (eventHTML) => {
         eventHTML.preventDefault();
-        authAxios.signup(newUser)
-            .then(() => {
-                navigate('/')
-            })
-            .catch((err) => console.log(err))
+        //newuser -> form data
+        for (const key in newUser) {
+            console.log(key, newUser[key]);
+            userFormData.append(key, newUser[key]);
+        }
+        console.log('User form data', userFormData.values());
+
+
+
+
+        // authAxios.signup(userFormData)
+        //     .then(() => {
+        //         navigate('/')
+        //     })
+        //     .catch((err) => console.log(err))
     };
 
     const updateNewUser = (eventHTML) => {
         const { name, value } = eventHTML.target;
+        // setUserFormData({ ...newUser, [name]: value });
         setNewUser({ ...newUser, [name]: value });
     };
 
@@ -37,15 +50,16 @@ const SignUpPage = () => {
 
     const updateNewUserPhoto = e => {
         const formData = new FormData();
-        formData.append('avatar', e.target.files[0]);
+        // formData.append('avatar', e.target.files[0]);
+        formData.append('avatar', this.state.selectedFile);
         // console.log(e.target.files[0]);
         updateNewUser({ target: { name: 'avatar', value: formData.get('avatar') } });
-        // authAxios.uploadPhoto(formData)
+        // authAxios.uploadPhoto(formData)º
     }
 
     return (
         // TODO: avatar and carmodel
-        <Form onSubmit={createNewUser}>
+        <Form onSubmit={createNewUser} encType='multipart/form-data'>
             <Form.Group className='mb-3' >
                 <Form.Label>Username</Form.Label>
                 <Form.Control
@@ -87,7 +101,7 @@ const SignUpPage = () => {
                 <Form.Control
                     type='file'
                     name='avatar'
-                    onChange={updateNewUser}
+                    onChange={updateNewUserPhoto}
                 />
             </Form.Group>
 
