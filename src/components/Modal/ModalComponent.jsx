@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/auth.context';
-import Rating from '@mui/material/Rating';
+// import Rating from '@mui/material/Rating';
 
 const ModalComponent = () => {
     const { user } = useContext(AuthContext)
