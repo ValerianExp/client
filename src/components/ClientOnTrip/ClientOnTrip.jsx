@@ -7,19 +7,24 @@ const ClientOnTrip = () => {
     const { id: tripId } = useParams()
 
     useEffect(() => {
-        console.log('Request')
         tripAxios.getTrip(tripId)
             .then((currentTrip) => {
-                console.log(currentTrip)
                 setTrip(currentTrip)
             })
             .catch((err) => console.log(err))
 
     }, [])
 
-    console.log(trip)
     return (
-        <div>{!trip ? ' No trip' : trip.driver.length === 0 ? 'No driver' : <p>DRIVER: {trip.driver[0]}</p>}</div>
+        <div>{!trip
+            ? ' No trip'
+            : trip.driver.length === 0
+                ? 'No driver'
+                : !trip.isFinished
+                    ? <p>DRIVER: {trip.driver[0]}</p>
+                    : <p>Viaje finalizado</p>
+        }
+        </div>
     )
 }
 

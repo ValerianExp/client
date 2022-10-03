@@ -10,6 +10,7 @@ class TripAxios extends InitAxios {
     }
 
     getAllTrips({ latDriver, lngDriver, maxDistance }) {
+        console.log('COORDS', { latDriver, lngDriver, maxDistance })
         return this.axios.get(`/all?latDriver=${latDriver}&lngDriver=${lngDriver}&maxDistance=${maxDistance}`).then((response) => response.data).catch((error) => console.log(error));
     }
 
