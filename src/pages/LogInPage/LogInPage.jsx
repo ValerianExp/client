@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import authAxios from '../services/authAxios';
-import { AuthContext } from '../context/auth.context';
+import authAxios from '../../services/authAxios';
+import { AuthContext } from '../../context/auth.context';
 
 
 const LogInPage = () => {

@@ -1,7 +1,7 @@
-import DriverOnTrip from '../components/DriverOnTrip/DriverOnTrip'
-import ClientOnTrip from '../components/ClientOnTrip/ClientOnTrip'
+import DriverOnTrip from '../../components/DriverOnTrip/DriverOnTrip'
+import ClientOnTrip from '../../components/ClientOnTrip/ClientOnTrip'
 import { useContext } from 'react'
-import { AuthContext } from '../context/auth.context'
+import { AuthContext } from '../../context/auth.context'
 
 const OnTripPage = () => {
     const { isLoading, user, isLoggedIn } = useContext(AuthContext)

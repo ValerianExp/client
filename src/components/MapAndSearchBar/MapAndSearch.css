@@ -1,0 +1,15 @@
+.mapAndSearch {
+    display: flex;
+    flex-direction: column;
+}
+
+.pin {
+    height: 60%;
+    width: auto
+}
+
+.autocomplete {
+    border: 1px solid #212529;
+    border-radius: 2%;
+    padding: 2%
+}

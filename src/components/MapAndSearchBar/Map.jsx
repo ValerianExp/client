@@ -2,7 +2,7 @@ import { DirectionsRenderer, GoogleMap, Marker } from "@react-google-maps/api"
 
 const Map = ({ directionsResponse, center, setMap }) => {
     return (
-        <div style={{ width: '500px', height: '500px' }}>
+        <>
             {/* Google Map div */}
             <GoogleMap
                 center={center}
@@ -21,7 +21,7 @@ const Map = ({ directionsResponse, center, setMap }) => {
                     <DirectionsRenderer directions={directionsResponse} />
                 ) : <Marker position={center} icon={{ url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }} />}
             </GoogleMap>
-        </div>
+        </>
     )
 
 }

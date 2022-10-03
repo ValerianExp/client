@@ -26,8 +26,10 @@ import addressToCoords from '../../utils/addressToCoords'
 import coordsToAddress from '../../utils/coordsToAddress'
 import { AuthContext } from '../../context/auth.context'
 import { useNavigate } from 'react-router-dom'
-import userLocation from '../../utils/userLocation'
 import Map from './Map'
+import { Container, Row } from 'react-bootstrap'
+import './MapAndSearch.css'
+import pin from '../../images/pin.png'
 
 
 
@@ -153,21 +155,30 @@ const MapAndSearch = () => {
 
     return (
 
-        <>
+        <Container className='mapAndSearch p-3'>
             <div className='text-center'>
-                <Autocomplete onPlaceChanged={calculateRoute}>
-                    <input type="text" placeholder='Origin' ref={originRef} />
-                </Autocomplete>
+                <Container className='m-2'>
+                    <Row>
+                        <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
+                            <input type="text" placeholder='Origin' ref={originRef} className='w-100 h-100 autocomplete' />
+                        </Autocomplete>
 
-                <Button onClick={setOriginLocation}>
-                    Use Your Location
-                </Button>
+                        <Button onClick={setOriginLocation} className='col'>
+                            <img src={pin} alt="" className='pin' />
+                        </Button>
+                    </Row>
+                </Container>
 
-                <Autocomplete onPlaceChanged={calculateRoute}>
-                    <input type="text" placeholder='Destination' ref={destiantionRef} />
-                </Autocomplete>
+                <Container className='m-2'>
+                    <Row>
+                        <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
+                            <input type="text" placeholder='Destination' ref={destiantionRef} className='w-100 h-100 autocomplete' />
+                        </Autocomplete>
+                    </Row>
+                </Container>
 
-                <Button onClick={CenterMap}>
+
+                <Button onClick={CenterMap} className='m-2'>
                     Center
                 </Button>
 
@@ -184,16 +195,17 @@ const MapAndSearch = () => {
 
                 <p>{errorMessage}</p>
 
-                <Button onClick={requestTrip}>
-                    Request Trip
-                </Button>
+
 
             </div>
+            <div className='m-2' style={{ width: '92vw', height: '60vh' }}>
+                <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
+            </div>
+            <Button onClick={requestTrip} className='m-2'>
+                Request Trip
+            </Button>
 
-            <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
-
-
-        </>
+        </Container>
 
     )
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import tripAxios from "../../services/tripAxios"
+import AutoGif from '../../images/icons8-fiat-500.gif'
+import './ClientOnTrip.css'
 
 const ClientOnTrip = () => {
     const [trip, setTrip] = useState(null)
@@ -19,9 +21,12 @@ const ClientOnTrip = () => {
         <div>{!trip
             ? ' No trip'
             : trip.driver.length === 0
-                ? 'No driver'
+                ? 'Wating for the driver'
                 : !trip.isFinished
-                    ? <p>DRIVER: {trip.driver[0]}</p>
+                    ? <div className="driverOnWay">
+                        <p>Driver is on the way</p>
+                        <img src={AutoGif} alt="" className="w-25" />
+                    </div>
                     : <p>Viaje finalizado</p>
         }
         </div>
