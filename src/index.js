@@ -9,6 +9,7 @@ import { PositionPairWrapper } from './context/positionPair.context';
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // TODO el strict mode con los markers cacota

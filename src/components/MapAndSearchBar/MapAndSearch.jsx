@@ -26,6 +26,10 @@ import addressToCoords from '../../utils/addressToCoords'
 import coordsToAddress from '../../utils/coordsToAddress'
 import { AuthContext } from '../../context/auth.context'
 import { useNavigate } from 'react-router-dom'
+import Map from './Map'
+import { Container, Row } from 'react-bootstrap'
+import './MapAndSearch.css'
+import pin from '../../images/pin.png'
 
 
 
@@ -47,6 +51,7 @@ const MapAndSearch = () => {
     const [origin, setOrigin] = useState(null)
 
     const [destination, setDestination] = useState(null)
+    const [errorMessage, setErrorMessage] = useState('')
 
     const { user } = useContext(AuthContext)
 
@@ -55,16 +60,15 @@ const MapAndSearch = () => {
         CenterMap()
     }, [])
 
-    const CenterMap = () => {
+    const CenterMap = async () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const lat = position.coords.latitude
                 const lng = position.coords.longitude
                 setCenter({ lat, lng })
-                console.log({ lat, lng })
+                // console.log({ lat, lng })
             }
         )
-        // console.log(lat, lng)
     }
 
     /** @type React.MutableRefObject<HTMLInputElement> */
@@ -93,6 +97,7 @@ const MapAndSearch = () => {
         const originCoords = await addressToCoords(placeIdOrigin)
         const destinationCoords = await addressToCoords(placeIdDest)
 
+        console.log('origin:', originRef.current.value)
         setOrigin(originCoords)
         setDestination(destinationCoords)
 
@@ -114,27 +119,33 @@ const MapAndSearch = () => {
     }
 
     const requestTrip = () => {
-        if (origin && destination) {
-            const newtrip = {
-                from_lat: origin.lat,
-                from_lng: origin.lng,
-                to_lat: destination.lat,
-                to_lng: destination.lng,
-                client: user._id,
-                price: Math.round(parseInt(distance))
-            }
-            coordsToAddress([destination.lat, destination.lng])
-                .then((res) => console.log(res))
-                .catch((err) => console.log(err))
+        if (user.credit > 0) {
+            if (origin && destination) {
+                const newtrip = {
+                    from_lat: origin.lat,
+                    from_lng: origin.lng,
+                    to_lat: destination.lat,
+                    to_lng: destination.lng,
+                    client: user._id,
+                    price: Math.round(parseInt(distance))
+                }
+                coordsToAddress([destination.lat, destination.lng])
+                    .then((res) => console.log(res))
+                    .catch((err) => console.log(err))
 
-            tripAxios.newtrip(newtrip)
-                .then((trip) => {
-                    console.log('Trip created')
-                    navigate(`/trip/${trip._id}`)
-                })
-                .catch((err) => console.log(err))
+                tripAxios.newtrip(newtrip)
+                    .then((trip) => {
+                        console.log('Trip created')
+                        navigate(`/trip/${trip._id}`)
+                    })
+                    .catch((err) => console.log(err))
+            } else {
+                console.log('No puedes pedir un viaje sin origen ni destino')
+                setErrorMessage('No puedes pedir un viaje sin origen ni destino')
+            }
         } else {
-            console.log('No puedes pedir un viaje sin origen ni destino')
+            console.log('No puedes pedir un viaje si debes dinero')
+            setErrorMessage('Cannot book a trip if you dont have credit')
         }
     }
 
@@ -144,21 +155,30 @@ const MapAndSearch = () => {
 
     return (
 
-        <>
+        <Container className='mapAndSearch p-3'>
             <div className='text-center'>
-                <Autocomplete onPlaceChanged={calculateRoute}>
-                    <input type="text" placeholder='Origin' ref={originRef} />
-                </Autocomplete>
+                <Container className='m-2'>
+                    <Row>
+                        <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
+                            <input type="text" placeholder='Origin' ref={originRef} className='w-100 h-100 autocomplete' />
+                        </Autocomplete>
 
-                <Button onClick={setOriginLocation}>
-                    Use Your Location
-                </Button>
+                        <Button onClick={setOriginLocation} className='col'>
+                            <img src={pin} alt="" className='pin' />
+                        </Button>
+                    </Row>
+                </Container>
 
-                <Autocomplete onPlaceChanged={calculateRoute}>
-                    <input type="text" placeholder='Destination' ref={destiantionRef} />
-                </Autocomplete>
+                <Container className='m-2'>
+                    <Row>
+                        <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
+                            <input type="text" placeholder='Destination' ref={destiantionRef} className='w-100 h-100 autocomplete' />
+                        </Autocomplete>
+                    </Row>
+                </Container>
 
-                <Button onClick={CenterMap}>
+
+                <Button onClick={CenterMap} className='m-2'>
                     Center
                 </Button>
 
@@ -167,42 +187,29 @@ const MapAndSearch = () => {
                 </Button>
 
                 {duration ? <>
-
                     <p>DURATION: {duration}</p>
+                    <p>DISTANCE: {distance}</p>
                     <p>PRICE: {Math.round(parseInt(distance))} </p>
                 </> : null
                 }
 
+                <p>{errorMessage}</p>
 
-                <Button onClick={requestTrip}>
-                    Request Trip
-                </Button>
+
 
             </div>
-
-            <div style={{ width: '500px', height: '500px' }}>
-                {/* Google Map div */}
-                <GoogleMap
-                    center={center}
-                    zoom={15}
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
-                    options={{
-                        zoomControl: false,
-                        streetViewControl: false,
-                        mapTypeControl: false,
-                        fullscreenControl: false,
-                    }}
-                    onLoad={map => setMap(map)}
-                >
-                    <Marker position={center} />
-                    {directionsResponse && (
-                        <DirectionsRenderer directions={directionsResponse} />
-                    )}
-                </GoogleMap>
+            <div className='m-2' style={{ width: '92vw', height: '60vh' }}>
+                <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
             </div>
-        </>
+            <Button onClick={requestTrip} className='m-2'>
+                Request Trip
+            </Button>
+
+        </Container>
 
     )
+
+
 
 }
 

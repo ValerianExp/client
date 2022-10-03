@@ -1,3 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+
 .App {
   text-align: center;
 }
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #F8F9FA;
+}
+
+/*  Colors */
+/* light: #F8F9FA
+dark: #212529
+hoverBtn: #6C757D
+btn: #343A40
+different: #ADB5BD */

@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/auth.context";
 import tripAxios from "../../../services/tripAxios";
@@ -7,19 +7,36 @@ const DriverHomePage = () => {
     const { user } = useContext(AuthContext)
     const [trips, setTrips] = useState([]);
     const navigate = useNavigate()
+    const maxDistance = 10000000
+
+    const [location, setLocation] = useState({})
 
     const body = {
         latDriver: 90,
         lngDriver: 90,
-        maxDistance: 10000000000000,
     }
 
+    useEffect(() => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                // const latDriver = 90
+                const latDriver = position.coords.latitude
+                // const lngDriver = 90
+                const lngDriver = position.coords.longitude
+                setLocation({ latDriver, lngDriver })
+                // console.log({ lat, lngDriver })
+            }
+        )
+    }, [])
+
     const getTrips = () => {
-        console.log(body);
-        tripAxios.getAllTrips(body).then((response) => {
-            console.log(response);
-            setTrips(response);
-        })
+        const body = { ...location, maxDistance }
+        console.log(body)
+        tripAxios.getAllTrips(body)
+            .then((response) => {
+                console.log('TRIPS', response);
+                setTrips(response);
+            })
     }
 
     const handleGetTrip = (tripId) => {
