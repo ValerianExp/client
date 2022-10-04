@@ -6,6 +6,7 @@ import LogInPage from './pages/LogInPage/LogInPage';
 import SignUpPage from './pages/SignUpPage/SignUpPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import OnTripPage from './pages/OnTripPage/OnTripPage';
+import ErrorPage from './pages/ErrorPage/ErrorPage';
 
 
 
@@ -20,6 +21,7 @@ function App() {
         <Route path='/login' element={<LogInPage />} />
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/trip/:id' element={<OnTripPage />} />
+        <Route path='/error/:errorMessage' element={<ErrorPage />} />
       </Routes>
     </div>
   );

@@ -18,14 +18,14 @@ const DriverOnTrip = () => {
         tripAxios.getTrip(tripId)
             .then((trip) => {
                 setCurrentTrip(trip)
-                getDirections()
-                CenterMap()
+                // getDirections()
+                // CenterMap()
             })
             .catch((err) => console.log(err))
     }, [])
 
 
-    console.log('TRIP', currentTrip)
+
     const finishTrip = () => {
         tripAxios.finishTrip(tripId)
             .then((trip) => console.log(trip))
@@ -35,67 +35,66 @@ const DriverOnTrip = () => {
     }
 
 
-    const getDirections = async () => {
-        try {
+    // const getDirections = async () => {
+    //     try {
+    //         // eslint-disable-next-line no-undef
+    //         const directionsService = new google.maps.DirectionsService()
+    //         console.log(`${currentTrip?.from.coordinates[0]}, ${currentTrip?.from.coordinates[1]}`)
+    //         console.log('40.4450141, -3.6521948')
+    //         const results = await directionsService.route({
+    //             // origin: `${currentTrip?.from.coordinates[1]}, ${currentTrip?.from.coordinates[0]}`,
+    //             // destination: `${currentTrip?.to.coordinates[1]}, ${currentTrip?.to.coordinates[0]}`,
+    //             origin: '40.4450141, - 3.6521948',
+    //             destination: '42.4450141, -3.7521948',
+    //             // eslint-disable-next-line no-undef
+    //             travelMode: google.maps.TravelMode.DRIVING,
+    //         })
+    //         setDirectionsResponse(results)
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // }
 
-            // eslint-disable-next-line no-undef
-            const directionsService = new google.maps.DirectionsService()
-            console.log(`${currentTrip?.from.coordinates[0]}, ${currentTrip?.from.coordinates[1]}`)
-            console.log('40.4450141, -3.6521948')
-            const results = await directionsService.route({
-                // origin: `${currentTrip?.from.coordinates[1]}, ${currentTrip?.from.coordinates[0]}`,
-                // destination: `${currentTrip?.to.coordinates[1]}, ${currentTrip?.to.coordinates[0]}`,
-                origin: '40.4450141, - 3.6521948',
-                destination: '42.4450141, -3.7521948',
-                // eslint-disable-next-line no-undef
-                travelMode: google.maps.TravelMode.DRIVING,
-            })
-            setDirectionsResponse(results)
-        } catch (err) {
-            console.log(err)
-        }
-    }
+    // const CenterMap = async () => {
+    //     navigator.geolocation.getCurrentPosition(
+    //         (position) => {
+    //             const lat = position.coords.latitude
+    //             const lng = position.coords.longitude
+    //             setCenter({ lat, lng })
+    //             // console.log({ lat, lng })
+    //         }
+    //     )
+    // }
 
-    const CenterMap = async () => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude
-                const lng = position.coords.longitude
-                setCenter({ lat, lng })
-                // console.log({ lat, lng })
-            }
-        )
-    }
 
-    console.log(tripFinished)
 
     return (
         !tripFinished && currentTrip ? <div>
             <p>Driver on the way</p>
-            {directionsResponse && <div style={{ width: '500px', height: '500px' }}>
+            {/* {directionsResponse && <div style={{ width: '500px', height: '500px' }}>
                 {/* Google Map div */}
-                <GoogleMap
-                    center={center}
-                    zoom={15}
-                    mapContainerStyle={{ width: '100%', height: '100%' }}
-                    options={{
-                        zoomControl: false,
-                        streetViewControl: false,
-                        mapTypeControl: false,
-                        fullscreenControl: false,
-                    }}
-                    onLoad={map => setMap(map)}
-                >
+            {/* <GoogleMap
+                center={center}
+                zoom={15}
+                mapContainerStyle={{ width: '100%', height: '100%' }}
+                options={{
+                    zoomControl: false,
+                    streetViewControl: false,
+                    mapTypeControl: false,
+                    fullscreenControl: false,
+                }}
+                onLoad={map => setMap(map)}
+            >
 
-                    {directionsResponse ? (
-                        <DirectionsRenderer directions={directionsResponse} />
-                    ) : <Marker position={center} icon={{ url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }} />}
-                </GoogleMap>
-            </div>}
+                {directionsResponse ? (
+                    <DirectionsRenderer directions={directionsResponse} />
+                ) : <Marker position={center} icon={{ url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" }} />}
+            </GoogleMap>
+        </div>} * /} */}
 
 
-            < Button onClick={finishTrip}>Finish Trip</Button>
-        </div>
+            < Button onClick={finishTrip} > Finish Trip</Button >
+        </div >
             :
             <Modal />
     )

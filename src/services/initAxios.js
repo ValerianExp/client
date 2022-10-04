@@ -9,11 +9,11 @@ class InitAxios {
         this.axios.interceptors.request.use((config) => {
             const token = localStorage.getItem('tokenAuth')
 
-            if (token) {
-                config.headers = {
-                    'authorization': `Bearer ${token}`
-                }
-            }
+            // if (token) {
+            //     config.headers = {
+            //         'authorization': `Bearer ${token}`
+            //     }
+            // }
             return config
         })
     }

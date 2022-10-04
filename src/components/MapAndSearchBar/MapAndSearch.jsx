@@ -33,11 +33,9 @@ import pin from '../../images/pin.png'
 
 
 
-const MapAndSearch = () => {
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
-        libraries: ['places']
-    })
+const MapAndSearch = ({ isLoaded }) => {
+    // TODO mver a un context 
+
 
     const navigate = useNavigate()
 
@@ -53,7 +51,7 @@ const MapAndSearch = () => {
     const [destination, setDestination] = useState(null)
     const [errorMessage, setErrorMessage] = useState('')
 
-    const { user } = useContext(AuthContext)
+    const { user, authentication } = useContext(AuthContext)
 
 
     useEffect(() => {
@@ -97,7 +95,6 @@ const MapAndSearch = () => {
         const originCoords = await addressToCoords(placeIdOrigin)
         const destinationCoords = await addressToCoords(placeIdDest)
 
-        console.log('origin:', originRef.current.value)
         setOrigin(originCoords)
         setDestination(destinationCoords)
 
@@ -129,13 +126,11 @@ const MapAndSearch = () => {
                     client: user._id,
                     price: Math.round(parseInt(distance))
                 }
-                coordsToAddress([destination.lat, destination.lng])
-                    .then((res) => console.log(res))
-                    .catch((err) => console.log(err))
 
                 tripAxios.newtrip(newtrip)
                     .then((trip) => {
                         console.log('Trip created')
+                        authentication()
                         navigate(`/trip/${trip._id}`)
                     })
                     .catch((err) => console.log(err))
@@ -186,21 +181,22 @@ const MapAndSearch = () => {
                     Clear Route
                 </Button>
 
-                {duration ? <>
-                    <p>DURATION: {duration}</p>
-                    <p>DISTANCE: {distance}</p>
-                    <p>PRICE: {Math.round(parseInt(distance))} </p>
-                </> : null
-                }
-
-                <p>{errorMessage}</p>
-
-
-
             </div>
-            <div className='m-2' style={{ width: '92vw', height: '60vh' }}>
-                <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
+            <div className='d-flex justify-content-center'>
+                <div className='m-2' style={{ width: '100vw', height: '60vh' }}>
+                    <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
+                </div>
             </div>
+
+            {duration ? <>
+                <p>DURATION: {duration}</p>
+                <p>DISTANCE: {distance}</p>
+                <p>PRICE: {Math.round(parseInt(distance))} </p>
+            </> : null
+            }
+
+            {errorMessage && <div id='errorMessage' >{errorMessage}</div>}
+
             <Button onClick={requestTrip} className='m-2'>
                 Request Trip
             </Button>

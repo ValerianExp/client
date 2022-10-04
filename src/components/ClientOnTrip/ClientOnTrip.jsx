@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 import tripAxios from "../../services/tripAxios"
 import AutoGif from '../../images/icons8-fiat-500.gif'
 import './ClientOnTrip.css'
@@ -7,14 +7,17 @@ import './ClientOnTrip.css'
 const ClientOnTrip = () => {
     const [trip, setTrip] = useState(null)
     const { id: tripId } = useParams()
+    const navigate = useNavigate()
 
     useEffect(() => {
         tripAxios.getTrip(tripId)
             .then((currentTrip) => {
                 setTrip(currentTrip)
             })
-            .catch((err) => console.log(err))
-
+            .catch((err) => {
+                console.log(err.response.data)
+                navigate(`/error/${err.response.data}`)
+            })
     }, [])
 
     return (
