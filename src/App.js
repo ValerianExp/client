@@ -6,7 +6,6 @@ import LogInPage from './pages/LogInPage/LogInPage';
 import SignUpPage from './pages/SignUpPage/SignUpPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import OnTripPage from './pages/OnTripPage/OnTripPage';
-import ErrorPage from './pages/ErrorPage/ErrorPage';
 import EditProfilePage from './pages/ProfilePage/EditProfile/EditProfilePage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
 
@@ -24,7 +23,6 @@ function App() {
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/profile/edit' element={<EditProfilePage />} />
         <Route path='/trip/:id' element={<OnTripPage />} />'
-        <Route path='/error/:errorMessage' element={<ErrorPage />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </div>

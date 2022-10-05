@@ -8,29 +8,37 @@ import { SkeletonText } from "@chakra-ui/react";
 import userLocation from "../../../utils/userLocation";
 import averageStars from '../../../utils/averageStars'
 import { Button } from "@chakra-ui/react";
+import ToastComponent from '../../../components/Toast/Toast'
 
-const DriverHomePage = ({ isLoaded }) => {
+
+
+const DriverHomePage = () => {
     const { user, authentication } = useContext(AuthContext)
     const [trips, setTrips] = useState([]);
     const navigate = useNavigate()
     const [maxDistance, setMaxDistance] = useState(50000000)
 
     const [location, setLocation] = useState({})
+    const [show, setShow] = useState(false)
+    const [errorMessage, setErrorMessage] = useState(null)
 
+    const [called, setCalled] = useState(false)
 
-
-    useEffect(() => {
+    const getUserLocation = () => {
         userLocation()
             .then((location) => {
                 setLocation({ latDriver: location.lat, lngDriver: location.lng })
             })
-            .catch((err) => console.log(err))
-        // getTrips()
-    }, [maxDistance])
-
-    if (!isLoaded) {
-        return <SkeletonText />
+            .catch((err) => {
+                console.log(err.message)
+                if (err.code === 1) {
+                    // console.log(err.response.data.errorMessage)
+                    setErrorMessage('Please, enable the geolocation')
+                    setShow(true)
+                }
+            })
     }
+
     const getTrips = async () => {
         try {
             const body = { ...location, maxDistance }
@@ -41,27 +49,36 @@ const DriverHomePage = ({ isLoaded }) => {
                     return ([coordsToAddress(trip.from.coordinates), coordsToAddress(trip.to.coordinates)])
                 }).flat()
             )
-            console.log('VALUES', values)
             const newTrips = trips.map((trip, index) => {
                 return ({ ...trip, addFrom: values[2 * index], addTo: values[2 * index + 1] })
             })
             setTrips(newTrips)
-            // const body = { ...location, maxDistance }
-            // console.log('BODY', body)
-            // const trips = await tripAxios.getAllTrips(body)
-            // Promise.all(
-            //     trips.map((trip) => {
-            //         return ([coordsToAddress(trip.from.coordinates), coordsToAddress(trip.to.coordinates)])
-            //     }).flat()
-            // ).then((values) => {
-
-            //     console.log(values)
-            // })
+            setCalled(true)
         } catch (err) {
-            console.log(err)
+            console.log(err.response.data.errorMessage)
+            setErrorMessage(err.response.data.errorMessage)
+            setShow(true)
         }
 
     }
+
+
+    useEffect(() => {
+        userLocation()
+            .then((location) => {
+                setLocation({ latDriver: location.lat, lngDriver: location.lng })
+            })
+            .catch((err) => {
+                console.log(err.message)
+                if (err.code === 1) {
+                    // console.log(err.response.data.errorMessage)
+                    setErrorMessage('Please, enable the geolocation')
+                    setShow(true)
+                }
+            })
+    }, [])
+
+
 
     const handleGetTrip = (tripId) => {
         tripAxios.setDriver(tripId, user._id)
@@ -71,7 +88,7 @@ const DriverHomePage = ({ isLoaded }) => {
             })
             .catch((err) => {
                 console.log(err.response.data)
-                navigate(`/error/${err.response.data}`)
+
             })
 
     }
@@ -90,40 +107,47 @@ const DriverHomePage = ({ isLoaded }) => {
     return (
         <Container>
             <>
-                <Form.Label>Max distance:</Form.Label>
-                <Form.Range onChange={getMaxDistance} value={maxDistance} max={100} min={0.1} />
+                <Form.Label>Max distance: {maxDistance / 1000} km</Form.Label>
+                <Form.Range onChange={getMaxDistance} value={maxDistance} max={100000} min={1000} />
             </>
 
             <ListGroup>
-                {trips.map((trip) => {
-                    console.log(trip)
-                    return (
-                        <ListGroup.Item key={trip._id}>
-                            <Container>
-                                <Row>
-                                    <div className={'col-3 d-flex flex-column'}>
-                                        <img src={trip.client[0].avatar} alt="" />
-                                        <p>@{trip.client[0].username}</p>
-                                        <p>{averageStars(trip.client[0].rating)}★</p>
+                {trips.length === 0 && called ? <div>
+                    <p>Not available trips at the moment.</p>
+                    <p>Try Later!</p>
+                </div>
+                    :
+                    trips.map((trip) => {
+                        console.log(trip)
+                        return (
+                            <ListGroup.Item key={trip._id}>
+                                <Container>
+                                    <Row>
+                                        <div className={'col-3 d-flex flex-column'}>
+                                            <img src={trip.client[0].avatar} alt="" />
+                                            <p>@{trip.client[0].username}</p>
+                                            <p>{averageStars(trip.client[0].rating)}★</p>
 
-                                    </div>
-                                    <div className="col">
-                                        <h3>ORIGIN: {trip.addFrom}</h3>
-                                        <h5>DESTINATION: {trip.addTo}</h5>
-                                        <p>PRICE: {trip.price}$</p>
-                                        <Button onClick={() => handleGetTrip(trip._id)}>Request Trip</Button>
-                                    </div>
-                                </Row>
-                            </Container>
-                        </ListGroup.Item>
+                                        </div>
+                                        <div className="col">
+                                            <h3>ORIGIN: {trip.addFrom}</h3>
+                                            <h5>DESTINATION: {trip.addTo}</h5>
+                                            <p>PRICE: {trip.price}$</p>
+                                            <Button onClick={() => handleGetTrip(trip._id)}>Request Trip</Button>
+                                        </div>
+                                    </Row>
+                                </Container>
+                            </ListGroup.Item>
 
-                    )
-                })}
+                        )
+                    })}
 
             </ListGroup>
 
 
             <Button onClick={getTrips}>Refresh Trips</Button>
+            <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
+            {console.log('show', show)}
         </Container>
     )
 }

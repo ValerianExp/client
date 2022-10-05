@@ -20,7 +20,7 @@ const ClientOnTrip = () => {
             })
             .catch((err) => {
                 console.log(err.response.data)
-                navigate(`/error/${err.response.data}`)
+
             })
     }, [])
 
@@ -48,9 +48,10 @@ const ClientOnTrip = () => {
                         <p>Viaje finalizado</p>
                         <Modal show={true} onHide={handleClose}>
                             <Modal.Header >
-                                <Modal.Title>Modal heading</Modal.Title>
+                                <Modal.Title>Rate your Driver</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
+                                How good was your driver? Rate him from 1 - 5★
                                 <Button className="rateBtn" onClick={() => rateDriver(1)}>1</Button>
                                 <Button className="rateBtn" onClick={() => rateDriver(2)}>2</Button>
                                 <Button className="rateBtn" onClick={() => rateDriver(3)}>3</Button>

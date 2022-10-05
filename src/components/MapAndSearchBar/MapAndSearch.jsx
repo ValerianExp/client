@@ -34,17 +34,19 @@ import pin from '../../images/pin.png'
 import GrowSpinner from '../GrowSpinner/GrowSpinner'
 import userLocation from '../../utils/userLocation'
 import ToastComponent from '../Toast/Toast'
+import calculatePrice from '../../utils/calculatePrice'
+import { MapsContext } from '../../context/map.context'
 
 
 
-const MapAndSearch = ({ isLoaded }) => {
+const MapAndSearch = (/*{ isLoaded }*/) => {
     // TODO mver a un context 
-
+    const { isLoaded, setMap } = useContext(MapsContext)
 
     const navigate = useNavigate()
 
 
-    const [map, setMap] = useState(/** @type google.maps.Map */(null))
+
     const [directionsResponse, setDirectionsResponse] = useState(null)
     const [distance, setDistance] = useState('')
     const [duration, setDuration] = useState('')
@@ -58,12 +60,11 @@ const MapAndSearch = ({ isLoaded }) => {
 
     const { user, authentication } = useContext(AuthContext)
 
+    const [price, setPrice] = useState(0)
+
 
     useEffect(() => {
         CenterMap()
-        userLocation()
-            .then((location) => console.log('LOC: ', location))
-            .catch((err) => console.log('ERROR',))
     }, [])
 
     const CenterMap = async () => {
@@ -82,28 +83,42 @@ const MapAndSearch = ({ isLoaded }) => {
     }
 
     async function calculateRoute() {
-        if (originRef.current.value === '' || destiantionRef.current.value === '') {
-            return
-        }
-        // eslint-disable-next-line no-undef
-        const directionsService = new google.maps.DirectionsService()
-        const results = await directionsService.route({
-            origin: originRef.current.value,
-            destination: destiantionRef.current.value,
+        try {
+
+            if (originRef.current.value === '' || destiantionRef.current.value === '') {
+                return
+            }
             // eslint-disable-next-line no-undef
-            travelMode: google.maps.TravelMode.DRIVING,
-        })
-        const placeIdOrigin = results.geocoded_waypoints[0].place_id
-        const placeIdDest = results.geocoded_waypoints[1].place_id
-        const originCoords = await addressToCoords(placeIdOrigin)
-        const destinationCoords = await addressToCoords(placeIdDest)
+            const directionsService = new google.maps.DirectionsService()
+            console.log('origin', originRef.current.value)
+            console.log('destination', destiantionRef.current.valu)
+            const results = await directionsService.route({
+                origin: originRef.current.value,
+                destination: destiantionRef.current.value,
+                // eslint-disable-next-line no-undef
+                travelMode: google.maps.TravelMode.DRIVING,
+            })
+            const placeIdOrigin = results.geocoded_waypoints[0].place_id
+            const placeIdDest = results.geocoded_waypoints[1].place_id
+            const originCoords = await addressToCoords(placeIdOrigin)
+            const destinationCoords = await addressToCoords(placeIdDest)
 
-        setOrigin(originCoords)
-        setDestination(destinationCoords)
+            setOrigin(originCoords)
+            setDestination(destinationCoords)
 
-        setDirectionsResponse(results)
-        setDistance(results.routes[0].legs[0].distance.text)
-        setDuration(results.routes[0].legs[0].duration.text)
+
+            setDirectionsResponse(results)
+            setDistance(results.routes[0].legs[0].distance.text)
+            setDuration(results.routes[0].legs[0].duration.text)
+            setPrice(calculatePrice(results.routes[0].legs[0].duration.text))
+        } catch (err) {
+            console.log(err)
+            if (err.code === "ZERO_RESULTS") {
+                console.log(err.code)
+                setErrorMessage('No route found from that origin to that destination')
+                setShow(true)
+            }
+        }
 
 
     }
@@ -129,7 +144,7 @@ const MapAndSearch = ({ isLoaded }) => {
                     to_lat: destination.lat,
                     to_lng: destination.lng,
                     client: user._id,
-                    price: Math.round(parseInt(distance))
+                    price: price,
                 }
 
                 tripAxios.newtrip(newtrip)
@@ -138,10 +153,14 @@ const MapAndSearch = ({ isLoaded }) => {
                         authentication()
                         navigate(`/trip/${trip._id}`)
                     })
-                    .catch((err) => console.log(err))
+                    .catch((err) => {
+                        console.log(err.response.data.errorMessage)
+                        setErrorMessage(err.response.data.errorMessage)
+                        setShow(true)
+                    })
             } else {
                 console.log('No puedes pedir un viaje si debes dinero')
-                setErrorMessage('Cant book a trip if you dont have credit')
+                setErrorMessage('Cant book a trip if you have negative credit')
                 setShow(true)
             }
         } else {
@@ -199,7 +218,7 @@ const MapAndSearch = ({ isLoaded }) => {
                 {duration ? <>
                     <p>DURATION: {duration}</p>
                     <p>DISTANCE: {distance}</p>
-                    <p>PRICE: {Math.round(parseInt(distance))} </p>
+                    <p>PRICE: {price} </p>
                 </> : null
                 }
 

@@ -2,7 +2,8 @@ import { Col, Row, Toast, ToastContainer } from "react-bootstrap"
 
 const ToastComponent = ({ errorMessage, show, setShow }) => {
     return (
-        <ToastContainer position='top-start'>
+        <ToastContainer style={{ position: 'fixed', top: 30, left: '55vw', fontFamily: 'monospace', fontSize: '20px' }}>
+
 
             <Row>
                 <Col xs={6}>
