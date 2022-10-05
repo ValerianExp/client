@@ -1,8 +1,9 @@
 const averageStars = (reviews) => {
+    console.log(reviews)
     const totalStars = reviews.reduce((acc, review) => {
-        return acc + review.stars;
+        return acc + review;
     }, 0);
-    return totalStars / reviews.length;
+    return (totalStars / reviews.length).toFixed(2);
 }
 
 export default averageStars;

@@ -5,7 +5,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthProvider } from './context/auth.context';
-import { PositionPairWrapper } from './context/positionPair.context';
 import { ChakraProvider, theme } from '@chakra-ui/react'
 
 
@@ -17,9 +16,7 @@ root.render(
   <Router>
     <AuthProvider>
       <ChakraProvider theme={theme}>
-        <PositionPairWrapper>
-          <App />
-        </PositionPairWrapper>
+        <App />
       </ChakraProvider>
     </AuthProvider>
   </Router>

@@ -18,6 +18,7 @@ import {
     Autocomplete,
     DirectionsRenderer,
 } from '@react-google-maps/api'
+// import Button from 'react-bootstrap/Button';
 
 
 import { useContext, useEffect, useRef, useState } from 'react'
@@ -30,6 +31,9 @@ import Map from './Map'
 import { Container, Row } from 'react-bootstrap'
 import './MapAndSearch.css'
 import pin from '../../images/pin.png'
+import GrowSpinner from '../GrowSpinner/GrowSpinner'
+import userLocation from '../../utils/userLocation'
+import ToastComponent from '../Toast/Toast'
 
 
 
@@ -44,29 +48,27 @@ const MapAndSearch = ({ isLoaded }) => {
     const [directionsResponse, setDirectionsResponse] = useState(null)
     const [distance, setDistance] = useState('')
     const [duration, setDuration] = useState('')
-    const [center, setCenter] = useState({ lat: 48.8584, lng: 2.2945 })
+    const [center, setCenter] = useState({ lat: 40.4165, lng: -3.7026 })
 
     const [origin, setOrigin] = useState(null)
 
     const [destination, setDestination] = useState(null)
-    const [errorMessage, setErrorMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState(null)
+    const [show, setShow] = useState(false)
 
     const { user, authentication } = useContext(AuthContext)
 
 
     useEffect(() => {
         CenterMap()
+        userLocation()
+            .then((location) => console.log('LOC: ', location))
+            .catch((err) => console.log('ERROR',))
     }, [])
 
     const CenterMap = async () => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude
-                const lng = position.coords.longitude
-                setCenter({ lat, lng })
-                // console.log({ lat, lng })
-            }
-        )
+        const location = await userLocation()
+        setCenter(location)
     }
 
     /** @type React.MutableRefObject<HTMLInputElement> */
@@ -76,6 +78,7 @@ const MapAndSearch = ({ isLoaded }) => {
 
     if (!isLoaded) {
         return <SkeletonText />
+        // return <GrowSpinner />
     }
 
     async function calculateRoute() {
@@ -101,6 +104,8 @@ const MapAndSearch = ({ isLoaded }) => {
         setDirectionsResponse(results)
         setDistance(results.routes[0].legs[0].distance.text)
         setDuration(results.routes[0].legs[0].duration.text)
+
+
     }
 
     const clearRoute = () => {
@@ -116,8 +121,8 @@ const MapAndSearch = ({ isLoaded }) => {
     }
 
     const requestTrip = () => {
-        if (user.credit > 0) {
-            if (origin && destination) {
+        if (origin && destination) {
+            if (user.credit > 0) {
                 const newtrip = {
                     from_lat: origin.lat,
                     from_lng: origin.lng,
@@ -135,12 +140,14 @@ const MapAndSearch = ({ isLoaded }) => {
                     })
                     .catch((err) => console.log(err))
             } else {
-                console.log('No puedes pedir un viaje sin origen ni destino')
-                setErrorMessage('No puedes pedir un viaje sin origen ni destino')
+                console.log('No puedes pedir un viaje si debes dinero')
+                setErrorMessage('Cant book a trip if you dont have credit')
+                setShow(true)
             }
         } else {
-            console.log('No puedes pedir un viaje si debes dinero')
-            setErrorMessage('Cannot book a trip if you dont have credit')
+            console.log('No puedes pedir un viaje sin origen ni destino')
+            setErrorMessage('Cant request a trip with no origin or destiny')
+            setShow(true)
         }
     }
 
@@ -149,59 +156,60 @@ const MapAndSearch = ({ isLoaded }) => {
 
 
     return (
+        <>
+            <Container className='mapAndSearch p-3'>
+                <div className='text-center'>
+                    <Container className='m-2'>
+                        <Row>
+                            <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
+                                <input type="text" placeholder='Origin' ref={originRef} className='w-100 h-100 autocomplete' />
+                            </Autocomplete>
 
-        <Container className='mapAndSearch p-3'>
-            <div className='text-center'>
-                <Container className='m-2'>
-                    <Row>
-                        <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
-                            <input type="text" placeholder='Origin' ref={originRef} className='w-100 h-100 autocomplete' />
-                        </Autocomplete>
+                            <Button onClick={setOriginLocation} className={'col locationBtn'}>
+                                <img src={pin} alt="" className='pin' />
+                            </Button>
 
-                        <Button onClick={setOriginLocation} className='col'>
-                            <img src={pin} alt="" className='pin' />
-                        </Button>
-                    </Row>
-                </Container>
+                        </Row>
+                    </Container>
 
-                <Container className='m-2'>
-                    <Row>
-                        <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
-                            <input type="text" placeholder='Destination' ref={destiantionRef} className='w-100 h-100 autocomplete' />
-                        </Autocomplete>
-                    </Row>
-                </Container>
+                    <Container className='m-2'>
+                        <Row>
+                            <Autocomplete onPlaceChanged={calculateRoute} className='col-10'>
+                                <input type="text" placeholder='Destination' ref={destiantionRef} className='w-100 h-100 autocomplete' />
+                            </Autocomplete>
+                        </Row>
+                    </Container>
 
 
-                <Button onClick={CenterMap} className='m-2'>
-                    Center
-                </Button>
+                    <Button onClick={CenterMap} className='m-2'>
+                        Center
+                    </Button>
 
-                <Button onClick={clearRoute}>
-                    Clear Route
-                </Button>
+                    <Button onClick={clearRoute}>
+                        Clear Route
+                    </Button>
 
-            </div>
-            <div className='d-flex justify-content-center'>
-                <div className='m-2' style={{ width: '100vw', height: '60vh' }}>
-                    <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
                 </div>
-            </div>
+                <div className='d-flex justify-content-center'>
+                    <div className='m-2' style={{ width: '100vw', height: '60vh' }}>
+                        <Map directionsResponse={directionsResponse} center={center} setMap={setMap} />
+                    </div>
+                </div>
 
-            {duration ? <>
-                <p>DURATION: {duration}</p>
-                <p>DISTANCE: {distance}</p>
-                <p>PRICE: {Math.round(parseInt(distance))} </p>
-            </> : null
-            }
+                {duration ? <>
+                    <p>DURATION: {duration}</p>
+                    <p>DISTANCE: {distance}</p>
+                    <p>PRICE: {Math.round(parseInt(distance))} </p>
+                </> : null
+                }
 
-            {errorMessage && <div id='errorMessage' >{errorMessage}</div>}
+                <Button onClick={requestTrip} className='m-2'>
+                    Request Trip
+                </Button>
 
-            <Button onClick={requestTrip} className='m-2'>
-                Request Trip
-            </Button>
-
-        </Container>
+            </Container>
+            <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
+        </>
 
     )
 

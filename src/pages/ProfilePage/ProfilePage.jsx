@@ -9,7 +9,7 @@ const ProfilePage = () => {
 
     const media = () => {
         if (user.rating.length === 0) return "N/D";
-        return (user.rating.reduce((acc, curr) => acc + curr) / user.rating.length) + " ★";
+        return (user.rating.reduce((acc, curr) => acc + curr) / user.rating.length).toFixed(2) + " ★";
     }
 
     return (
