@@ -7,7 +7,7 @@ import SignUpPage from './pages/SignUpPage/SignUpPage';
 import ProfilePage from './pages/ProfilePage/ProfilePage';
 import OnTripPage from './pages/OnTripPage/OnTripPage';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
-
+import EditProfilePage from './pages/ProfilePage/EditProfile/EditProfilePage';
 
 
 function App() {
@@ -20,7 +20,8 @@ function App() {
         <Route path='/signup' element={<SignUpPage />} />
         <Route path='/login' element={<LogInPage />} />
         <Route path='/profile' element={<ProfilePage />} />
-        <Route path='/trip/:id' element={<OnTripPage />} />
+        <Route path='/profile/edit' element={<EditProfilePage />} />
+        <Route path='/trip/:id' element={<OnTripPage />} />'
         <Route path='/error/:errorMessage' element={<ErrorPage />} />
       </Routes>
     </div>

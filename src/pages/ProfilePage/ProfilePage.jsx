@@ -1,10 +1,12 @@
 import { useContext } from "react";
 import { AuthContext } from "../../context/auth.context";
-import { Link } from "react-router-dom"
+
 import './ProfilePage.css'
 
 const ProfilePage = () => {
     const { user } = useContext(AuthContext);
+
+
     console.log("usuario->", user);
 
     const media = () => {
@@ -14,11 +16,7 @@ const ProfilePage = () => {
 
     return (
         user && <>
-            <div>
-                <p>Profile Page</p>
-                <Link to='/profile'>Edit user</Link>
-            </div>
-            {/* --------------------------- */}
+
             <div className="container db-social">
                 <div className="jumbotron jumbotron-fluid"></div>
                 <div className="container-fluid">
@@ -48,8 +46,8 @@ const ProfilePage = () => {
                                                 <img className="rounded-circle" src={user.avatar ? user.avatar : "https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png"} alt="Avatar or user" />
                                             </div>
                                             <div className="infos">
-                                                <h2>David Green</h2>
-                                                <div className="location">Las Vegas, Nevada, U.S.</div>
+                                                <h2>{user.username}</h2>
+                                                <div className="location">{user.role === "CLIENT" ? "Cliente" : "Conductor"}</div>
                                             </div>
                                         </div>
                                         {/* <div className="col-xl-4 col-md-4 d-flex justify-content-lg-end justify-content-md-end justify-content-center" style={{ marginBottom: "20px" }}>
@@ -68,9 +66,9 @@ const ProfilePage = () => {
                                                 </div>
                                             </div>
                                         </div> */}
-                                        <div className="flex">
-                                            <button type="button" className="btn btn-primary">Prueba</button>
-                                            <button type="button" className="btn btn-outline-danger">Eliminar perfil</button>
+                                        <div className="optionsButtonsContainer">
+                                            <a className="btn btn-primary text-nowrap" href="/profile/edit">Edit profile</a>
+                                            <a className="btn btn-outline-danger text-nowrap" href="/">Delete profile</a>
                                         </div>
                                     </div>
                                 </div>

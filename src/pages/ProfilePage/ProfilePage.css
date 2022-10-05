@@ -180,3 +180,15 @@
     color: #aea9c3;
     font-size: 1rem;
 }
+
+.optionsButtonsContainer {
+    display: flex;
+    /* padding-left: 60px; */
+    margin-bottom: 2vh;
+    /* padding-left: 1vh; */
+    justify-content: space-evenly;
+}
+
+.optionsButtonsContainer a {
+    margin: 0 5px;
+}

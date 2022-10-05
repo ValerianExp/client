@@ -2,18 +2,27 @@ import { useState } from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import authAxios from '../../services/authAxios';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
 import './SignUpPage.css'
 
 const SignUpPage = () => {
     const [newUser, setNewUser] = useState({});
-    const navigate = useNavigate()
+    const [userForm, setUserForm] = useState(new FormData());
+    const [imageProfileLabelName, setImageProfileLabelName] = useState('Choose file');
+    const navigate = useNavigate();
 
     console.log('User', newUser)
+    console.log("userForm", userForm);
 
 
     const createNewUser = (eventHTML) => {
         eventHTML.preventDefault();
-        authAxios.signup(newUser)
+
+        for (const key in newUser) {
+            userForm.append(key, newUser[key]);
+        }
+
+        authAxios.signup(userForm)
             .then(() => {
                 navigate('/')
             })
@@ -22,6 +31,14 @@ const SignUpPage = () => {
 
     const updateNewUser = (eventHTML) => {
         const { name, value } = eventHTML.target;
+
+        // for (const key in newUser) {
+        //     userForm.append(key, newUser[key]);
+        // }
+
+        // userForm.append(name, value);
+
+        // console.log(userForm.get(name))
         setNewUser({ ...newUser, [name]: value });
     };
 
@@ -35,17 +52,21 @@ const SignUpPage = () => {
     }
 
     const updateNewUserPhoto = e => {
-        const formData = new FormData();
-        formData.append('avatar', e.target.files[0]);
-        // console.log(e.target.files[0]);
-        updateNewUser({ target: { name: 'avatar', value: formData.get('avatar') } });
-        // authAxios.uploadPhoto(formData)
+        // const formData = new FormData();
+
+
+        //TODO this is not working
+        //importante
+
+        userForm.append('avatar', e.target.files[0]);
+        setImageProfileLabelName(e.target.files[0].name);
+        //importante
+        // updateNewUser({ target: { name: 'avatar', value: e.target.files[0].name } });
     }
 
     return (
         // TODO: avatar and carmodel
         <Container>
-
 
             <Form onSubmit={createNewUser}>
                 <Form.Group className='mb-3' >
@@ -85,12 +106,16 @@ const SignUpPage = () => {
                 </Form.Group>
 
                 <Form.Group className='mb-3' >
-                    <Form.Label>ImageProfile</Form.Label>
-                    <Form.Control
-                        type='file'
-                        name='avatar'
-                        onChange={updateNewUser}
-                    />
+                    <Form.Label>Profile Picture</Form.Label>
+                    <Form.Label className="imageProfileLabel">
+                        <div className='imageProfileLabelName'> <FileUploadIcon />{imageProfileLabelName}</div>
+                        <Form.Control
+                            type='file'
+                            name='avatar'
+                            onChange={updateNewUserPhoto}
+                            className="inputImageProfile"
+                        />
+                    </Form.Label>
                 </Form.Group>
 
                 {newUser?.role === 'DRIVER' && <Form.Group className='mb-3' >
