@@ -1,6 +1,8 @@
+import { Button } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Button, Container, Form } from 'react-bootstrap';
+import { Container, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import ToastComponent from '../../components/Toast/Toast';
 import authAxios from '../../services/authAxios';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import './SignUpPage.css'
@@ -10,6 +12,10 @@ const SignUpPage = () => {
     const [userForm, setUserForm] = useState(new FormData());
     const [imageProfileLabelName, setImageProfileLabelName] = useState('Choose file');
     const navigate = useNavigate();
+    const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null)
+
+
 
     console.log('User', newUser)
     console.log("userForm", userForm);
@@ -26,7 +32,10 @@ const SignUpPage = () => {
             .then(() => {
                 navigate('/')
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                setErrorMessage(err.response.data.errorMessage)
+                setShow(true)
+            })
     };
 
     const updateNewUser = (eventHTML) => {
@@ -66,76 +75,75 @@ const SignUpPage = () => {
 
     return (
         // TODO: avatar and carmodel
-        <Container>
-
-            <Form onSubmit={createNewUser}>
-                <Form.Group className='mb-3' >
-                    <Form.Label>Username</Form.Label>
-                    <Form.Control
-                        name='username'
-                        type='text'
-                        placeholder='username'
-                        onChange={updateNewUser}
-                    />
-                </Form.Group>
-                <Form.Group className='mb-3' >
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                        name='email'
-                        type='text'
-                        placeholder='pepe@pepe.com'
-                        onChange={updateNewUser}
-                    />
-                </Form.Group>
-                <Form.Group className='mb-3' >
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                        name='password'
-                        type='password'
-                        placeholder='Password'
-                        onChange={updateNewUser}
-                    />
-                </Form.Group>
-
-                <Form.Group className='mb-3' >
-                    <Form.Label>Are you a driver? </Form.Label>
-                    <input
-                        type="checkbox"
-                        onChange={handleOnCheck}
-                    />
-                </Form.Group>
-
-                <Form.Group className='mb-3' >
-                    <Form.Label>Profile Picture</Form.Label>
-                    <Form.Label className="imageProfileLabel">
-                        <div className='imageProfileLabelName'> <FileUploadIcon />{imageProfileLabelName}</div>
+        <>
+            <Container>
+                <Form onSubmit={createNewUser}>
+                    <Form.Group className='mb-3' >
+                        <Form.Label>Username</Form.Label>
                         <Form.Control
-                            type='file'
-                            name='avatar'
-                            onChange={updateNewUserPhoto}
-                            className="inputImageProfile"
+                            name='username'
+                            type='text'
+                            placeholder='username'
+                            onChange={updateNewUser}
                         />
-                    </Form.Label>
-                </Form.Group>
+                    </Form.Group>
+                    <Form.Group className='mb-3' >
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                            name='email'
+                            type='text'
+                            placeholder='pepe@pepe.com'
+                            onChange={updateNewUser}
+                        />
+                    </Form.Group>
+                    <Form.Group className='mb-3' >
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control
+                            name='password'
+                            type='password'
+                            placeholder='Password'
+                            onChange={updateNewUser}
+                        />
+                    </Form.Group>
 
-                {newUser?.role === 'DRIVER' && <Form.Group className='mb-3' >
-                    <Form.Label>Car model</Form.Label>
-                    <Form.Control
-                        name='carModel'
-                        type='text'
-                        placeholder='Car Model'
-                        onChange={updateNewUser}
-                    />
-                </Form.Group>}
+                    <Form.Group className='mb-3' >
+                        <Form.Label>Are you a driver? </Form.Label>
+                        <input
+                            type="checkbox"
+                            onChange={handleOnCheck}
+                        />
+                    </Form.Group>
 
+                    <Form.Group className='mb-3' >
+                        <Form.Label>Profile Picture</Form.Label>
+                        <Form.Label className="imageProfileLabel">
+                            <div className='imageProfileLabelName'> <FileUploadIcon />{imageProfileLabelName}</div>
+                            <Form.Control
+                                type='file'
+                                name='avatar'
+                                onChange={updateNewUserPhoto}
+                                className="inputImageProfile"
+                            />
+                        </Form.Label>
+                    </Form.Group>
 
+                    {newUser?.role === 'DRIVER' && <Form.Group className='mb-3' >
+                        <Form.Label>Car model</Form.Label>
+                        <Form.Control
+                            name='carModel'
+                            type='text'
+                            placeholder='Car Model'
+                            onChange={updateNewUser}
+                        />
+                    </Form.Group>}
 
-
-                <Button className='signupBtn' type='submit'>
-                    Sign Up
-                </Button>
-            </Form >
-        </Container>
+                    <Button className='signupBtn' type='submit'>
+                        Sign Up
+                    </Button>
+                </Form >
+            </Container>
+            <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
+        </>
     );
 };
 

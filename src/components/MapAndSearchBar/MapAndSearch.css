@@ -13,3 +13,8 @@
     border-radius: 2%;
     padding: 2%
 }
+
+.locationBtn {
+    width: 20px;
+    height: 20px
+}

@@ -1,18 +1,20 @@
+import { Button } from "@chakra-ui/react"
 import { DirectionsRenderer, GoogleMap, Marker } from "@react-google-maps/api"
-import { useEffect, useState } from "react"
-import { Button } from "react-bootstrap"
+import { useContext, useEffect, useState } from "react"
+import { Modal } from "react-bootstrap"
 import { useNavigate, useParams } from "react-router-dom"
 import tripAxios from "../../services/tripAxios"
-import Modal from "../Modal/ModalComponent"
+import { AuthContext } from '../../context/auth.context'
 
 const DriverOnTrip = () => {
     const { id: tripId } = useParams()
     const navigate = useNavigate()
-    const [tripFinished, setTipFinished] = useState(false)
     const [directionsResponse, setDirectionsResponse] = useState('')
     const [currentTrip, setCurrentTrip] = useState(null)
     const [center, setCenter] = useState({ lat: 48.8584, lng: 2.2945 })
     const [map, setMap] = useState(/** @type google.maps.Map */(null))
+    const [show, setShow] = useState(false);
+    const { authentication } = useContext(AuthContext)
 
     useEffect(() => {
         tripAxios.getTrip(tripId)
@@ -26,13 +28,18 @@ const DriverOnTrip = () => {
 
 
 
-    const finishTrip = () => {
-        tripAxios.finishTrip(tripId)
+    const finishTrip = (rating) => {
+        tripAxios.finishTrip(tripId, rating)
             .then((trip) => console.log(trip))
             .catch((err) => console.log(err))
+        authentication()
+        navigate('/')
 
-        setTipFinished(true)
     }
+
+    const handleClose = () => setShow(false);
+    const handleOpen = () => setShow(true);
+
 
 
     // const getDirections = async () => {
@@ -69,7 +76,7 @@ const DriverOnTrip = () => {
 
 
     return (
-        !tripFinished && currentTrip ? <div>
+        !show && currentTrip ? <div>
             <p>Driver on the way</p>
             {/* {directionsResponse && <div style={{ width: '500px', height: '500px' }}>
                 {/* Google Map div */}
@@ -92,11 +99,25 @@ const DriverOnTrip = () => {
             </GoogleMap>
         </div>} * /} */}
 
+            <>
+                < Button onClick={handleOpen} > Finish Trip</Button >
 
-            < Button onClick={finishTrip} > Finish Trip</Button >
-        </div >
-            :
-            <Modal />
+            </>
+        </div > : <Modal show={true} onHide={handleClose}>
+            <Modal.Header >
+                <Modal.Title>Rate the Client</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Button className="rateBtn" onClick={() => finishTrip(1)}>1</Button>
+                <Button className="rateBtn" onClick={() => finishTrip(2)}>2</Button>
+                <Button className="rateBtn" onClick={() => finishTrip(3)}>3</Button>
+                <Button className="rateBtn" onClick={() => finishTrip(4)}>4</Button>
+                <Button className="rateBtn" onClick={() => finishTrip(5)}>5</Button>
+            </Modal.Body>
+            <Modal.Footer>
+            </Modal.Footer>
+        </Modal>
+
     )
 
 
