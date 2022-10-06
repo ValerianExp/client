@@ -9,6 +9,7 @@ import userLocation from "../../../utils/userLocation";
 import averageStars from '../../../utils/averageStars'
 import { Button } from "@chakra-ui/react";
 import ToastComponent from '../../../components/Toast/Toast'
+import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 
 
 
@@ -16,28 +17,13 @@ const DriverHomePage = () => {
     const { user, authentication } = useContext(AuthContext)
     const [trips, setTrips] = useState([]);
     const navigate = useNavigate()
-    const [maxDistance, setMaxDistance] = useState(50000000)
+    const [maxDistance, setMaxDistance] = useState(50000)
 
     const [location, setLocation] = useState({})
     const [show, setShow] = useState(false)
     const [errorMessage, setErrorMessage] = useState(null)
 
     const [called, setCalled] = useState(false)
-
-    const getUserLocation = () => {
-        userLocation()
-            .then((location) => {
-                setLocation({ latDriver: location.lat, lngDriver: location.lng })
-            })
-            .catch((err) => {
-                console.log(err.message)
-                if (err.code === 1) {
-                    // console.log(err.response.data.errorMessage)
-                    setErrorMessage('Please, enable the geolocation')
-                    setShow(true)
-                }
-            })
-    }
 
     const getTrips = async () => {
         try {
@@ -63,6 +49,7 @@ const DriverHomePage = () => {
     }
 
 
+
     useEffect(() => {
         userLocation()
             .then((location) => {
@@ -79,7 +66,6 @@ const DriverHomePage = () => {
     }, [])
 
 
-
     const handleGetTrip = (tripId) => {
         tripAxios.setDriver(tripId, user._id)
             .then(({ trip }) => {
@@ -87,7 +73,10 @@ const DriverHomePage = () => {
                 navigate(`/trip/${trip._id}`)
             })
             .catch((err) => {
-                console.log(err.response.data)
+                console.log(err.response.data.errorMessage)
+                setErrorMessage(err.response.data.errorMessage)
+                setShow(true)
+                getTrips()
 
             })
 

@@ -14,7 +14,7 @@ const ToastComponent = ({ errorMessage, show, setShow }) => {
                                 className="rounded me-2"
                                 alt=""
                             />
-                            <strong className="me-auto">ERROR</strong>
+                            <strong className="me-auto" style={{ color: 'red' }}>ERROR</strong>
                         </Toast.Header>
                         <Toast.Body>{errorMessage}</Toast.Body>
                     </Toast>
