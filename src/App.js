@@ -19,7 +19,7 @@ function App() {
       <NavBarComponent />
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/signup' element={<SignUpPage />} />
+        <Route path='/signup' element={<SignUpPage />} /> 
         <Route path='/login' element={<LogInPage />} />
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/profile/edit' element={<EditProfilePage />} />

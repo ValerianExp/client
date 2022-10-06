@@ -17,7 +17,6 @@ const NavBarComponent = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
                         {!isLoading && !isLoggedIn ? <>
-                            {console.log(!isLoading, isLoggedIn)}
                             <Nav.Link as='span'>
                                 <Link to='/signup'>Sign Up</Link>
                             </Nav.Link>

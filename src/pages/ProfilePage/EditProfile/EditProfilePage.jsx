@@ -1,20 +1,67 @@
 import { useContext, useState, useEffect } from "react";
+import ToastComponent from "../../../components/Toast/Toast";
 import { AuthContext } from "../../../context/auth.context";
+import userAxios from "../../../services/userAxios";
 
 const EditProfilePage = () => {
     const { user } = useContext(AuthContext);
     const [newUser, setNewUser] = useState(user || {});
+    const [userForm, setUserForm] = useState(new FormData());
+
+    // Notif
+    const [show, setShow] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null)
 
     useEffect(() => {
-        setNewUser(user);
+        if (user) {
+            const { email, username, _id } = user;
+            setNewUser({ email, username, _id });
+        }
     }, [user]);
+
+    useEffect(() => {
+        console.log('userForm->', userForm.getAll);
+    }, [userForm]);
 
     const changeFieldHandle = (eventHTML) => {
         const { name, value } = eventHTML.target;
         console.log(name);
         console.log(value);
+        newUser.avatar = undefined;
         setNewUser({ ...newUser, [name]: value });
     };
+
+    const updateNewUserPhoto = e => {
+        const file = e.target.files[0];
+
+        userForm.append('avatar', file);
+    };
+
+    const submitHandle = (eventHTML) => {
+        eventHTML.preventDefault();
+        console.log("newUser->", newUser);
+
+        for (const key in newUser) {
+            if (key !== 'avatar') {
+                userForm.append(key, newUser[key]);
+            }
+        }
+
+        console.log('newUser ->', newUser);
+        // console.log('userForm ->: ', userForm);
+
+        userAxios
+            .editUser(userForm)
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((err) => {
+                setErrorMessage(err.response.data.errorMessage)
+                setShow(true)
+            })
+        
+    };
+
 
     return (
         user && newUser && <>
@@ -69,7 +116,16 @@ const EditProfilePage = () => {
                     <label htmlFor="email">Email</label>
                     <input type="email" className="form-control" id="email" name="email" value={newUser.email} onChange={changeFieldHandle} />
                 </div>
+                <div className='imageProfileLabelName'>Profile</div>
+                <input
+                    type='file'
+                    name='avatar'
+                    onChange={updateNewUserPhoto}
+                />
+                <button type="submit" className="btn btn-primary" onClick={submitHandle}>Submit</button>
             </form >
+
+            <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
         </>
     )
 }
