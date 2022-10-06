@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ToastComponent from "../../../components/Toast/Toast";
 import { AuthContext } from "../../../context/auth.context";
 import userAxios from "../../../services/userAxios";
@@ -32,9 +33,27 @@ const EditProfilePage = () => {
     };
 
     const updateNewUserPhoto = e => {
+        e.preventDefault();
         const file = e.target.files[0];
 
         userForm.append('avatar', file);
+    };
+
+    const deleteUserHandle = (e) => {
+        // e.preventDefault();
+        console.log("borrando?");
+        userAxios
+            .deleteUser(user._id)
+            .then((response) => {
+                console.log(response);
+                // setErrorMessage(response.data.message);
+                // setShow(true);
+            })
+            .catch((err) => {
+                console.log(err);
+                setErrorMessage(err.response.data.message);
+                // setShow(true);
+            });
     };
 
     const submitHandle = (eventHTML) => {
@@ -59,7 +78,6 @@ const EditProfilePage = () => {
                 setErrorMessage(err.response.data.errorMessage)
                 setShow(true)
             })
-        
     };
 
 
@@ -96,8 +114,8 @@ const EditProfilePage = () => {
                                             </div>
                                         </div>
                                         <div className="optionsButtonsContainer">
-                                            <a className="btn btn-primary text-nowrap" href="/profile/edit">Edit profile</a>
-                                            <a className="btn btn-outline-danger text-nowrap" href="/">Delete profile</a>
+                                            <Link className="btn btn-primary text-nowrap" to="/profile/edit">Edit profile</Link>
+                                            <Link className="btn btn-outline-danger text-nowrap" to="/profile/delete" onClick={deleteUserHandle}>Delete profile</Link>
                                         </div>
                                     </div>
                                 </div>

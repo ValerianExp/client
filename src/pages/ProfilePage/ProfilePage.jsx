@@ -1,5 +1,7 @@
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/auth.context";
+
 
 import './ProfilePage.css'
 
@@ -67,8 +69,8 @@ const ProfilePage = () => {
                                             </div>
                                         </div> */}
                                         <div className="optionsButtonsContainer">
-                                            <a className="btn btn-primary text-nowrap" href="/profile/edit">Edit profile</a>
-                                            <a className="btn btn-outline-danger text-nowrap" href="/">Delete profile</a>
+                                            <Link className="btn btn-primary text-nowrap" to="/profile/edit">Edit profile</Link>
+                                            <Link className="btn btn-outline-danger text-nowrap" href="/">Delete profile</Link>
                                         </div>
                                     </div>
                                 </div>
