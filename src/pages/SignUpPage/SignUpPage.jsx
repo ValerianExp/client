@@ -141,6 +141,7 @@ const SignUpPage = () => {
                         Sign Up
                     </Button>
                 </Form >
+                <p>Already have an account? <a href={'/signup'}>Log In </a></p>
             </Container>
             <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
         </>

@@ -3,10 +3,10 @@ import MapAndSearch from '../../../components/MapAndSearchBar/MapAndSearch';
 import { AuthContext } from '../../../context/auth.context';
 
 
-const ClientHomePage = ({ isLoaded }) => {
+const ClientHomePage = () => {
     return (
         <>
-            <MapAndSearch isLoaded={isLoaded} />
+            <MapAndSearch />
 
         </>
     )
