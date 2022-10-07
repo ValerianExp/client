@@ -8,7 +8,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import OnTripPage from './pages/OnTripPage/OnTripPage';
 import EditProfilePage from './pages/ProfilePage/EditProfile/EditProfilePage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
-
+import BuyCoins from './pages/BuyCoins/BuyCoins';
 
 
 function App() {
@@ -18,11 +18,13 @@ function App() {
       <NavBarComponent />
       <Routes>
         <Route path='/' element={<HomePage />} />
-        <Route path='/signup' element={<SignUpPage />} /> 
+        <Route path='/signup' element={<SignUpPage />} />
         <Route path='/login' element={<LogInPage />} />
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/profile/edit' element={<EditProfilePage />} />
         <Route path='/trip/:id' element={<OnTripPage />} />'
+        <Route path='/profile/delete' element={<HomePage />} />
+        <Route path='/buyCoins' element={<BuyCoins />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </div>

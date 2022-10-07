@@ -62,7 +62,7 @@ const LogInPage = () => {
                         Log In
                     </Button>
 
-                    <p>Don't have an account yet? <a href={'/signup'}>Sign Up</a></p>
+                    <p>Don't have an account yet? <Link to='/signup'>Sign Up</Link></p>
 
                 </Form>
             </Container>

@@ -4,6 +4,7 @@ import { AuthContext } from '../../../context/auth.context';
 
 
 const ClientHomePage = () => {
+
     return (
         <>
             <MapAndSearch />

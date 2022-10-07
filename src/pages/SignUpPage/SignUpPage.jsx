@@ -1,7 +1,7 @@
 import { Button } from '@chakra-ui/react';
 import { useState } from 'react';
 import { Container, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ToastComponent from '../../components/Toast/Toast';
 import authAxios from '../../services/authAxios';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
@@ -14,6 +14,10 @@ const SignUpPage = () => {
     const navigate = useNavigate();
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null)
+
+
+    console.log('User', newUser)
+    console.log("userForm", userForm);
 
 
     const createNewUser = (eventHTML) => {
@@ -152,7 +156,7 @@ const SignUpPage = () => {
                         Sign Up
                     </Button>
                 </Form >
-                <p>Already have an account? <a href={'/signup'}>Log In </a></p>
+                <p>Already have an account? <Link to='/signup'>Log In </Link></p>
             </Container>
             <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
         </>
