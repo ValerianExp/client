@@ -16,7 +16,6 @@ const SignUpPage = () => {
     const [errorMessage, setErrorMessage] = useState(null)
 
 
-
     console.log('User', newUser)
     console.log("userForm", userForm);
 
