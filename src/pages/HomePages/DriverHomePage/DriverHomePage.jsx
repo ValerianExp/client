@@ -10,7 +10,7 @@ import averageStars from '../../../utils/averageStars'
 import { Button } from "@chakra-ui/react";
 import ToastComponent from '../../../components/Toast/Toast'
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
-
+import socket from '../../../config/socket.config'
 
 
 const DriverHomePage = () => {
@@ -25,10 +25,18 @@ const DriverHomePage = () => {
 
     const [called, setCalled] = useState(false)
 
-    const getTrips = async () => {
+    const [update, setUpdate] = useState(null)
+
+    const getTrips = async (loc) => {
         try {
-            const body = { ...location, maxDistance }
-            console.log('BODY', body)
+            let body;
+            if (!loc) {
+                body = { ...location, maxDistance }
+                console.log('BODY', body)
+            } else {
+                body = { ...loc, maxDistance }
+            }
+            console.log(body)
             const trips = await tripAxios.getAllTrips(body)
             const values = await Promise.all(
                 trips.map((trip) => {
@@ -52,8 +60,9 @@ const DriverHomePage = () => {
 
     useEffect(() => {
         userLocation()
-            .then((location) => {
-                setLocation({ latDriver: location.lat, lngDriver: location.lng })
+            .then(async (location) => {
+                await setLocation({ latDriver: location.lat, lngDriver: location.lng })
+                await getTrips({ latDriver: location.lat, lngDriver: location.lng })
             })
             .catch((err) => {
                 console.log(err.message)
@@ -63,7 +72,14 @@ const DriverHomePage = () => {
                     setShow(true)
                 }
             })
-    }, [])
+
+        socket.emit('ConnectGeneral')
+
+        socket.on('newTrips', (payload) => {
+            console.log('UPDATE', payload)
+            setUpdate(payload)
+        })
+    }, [update])
 
 
     const handleGetTrip = (tripId) => {
@@ -81,9 +97,6 @@ const DriverHomePage = () => {
             })
 
     }
-    //TODO FROM ORIGIN LAT AND LONG TO ADDRESS
-    //TODO FROM DESTINATION LAT AND LONG TO ADDRESS
-
 
 
     const getMaxDistance = (e) => {

@@ -11,7 +11,7 @@ const NavBarComponent = () => {
         <Navbar bg="light" expand="lg">
             <Container>
                 <Navbar.Brand as='span'>
-                    <Link to='/'> React-Bootstrap</Link>
+                    <Link to='/'> CarScape</Link>
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">

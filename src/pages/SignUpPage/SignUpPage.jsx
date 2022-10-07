@@ -16,11 +16,6 @@ const SignUpPage = () => {
     const [errorMessage, setErrorMessage] = useState(null)
 
 
-
-    console.log('User', newUser)
-    console.log("userForm", userForm);
-
-
     const createNewUser = (eventHTML) => {
         eventHTML.preventDefault();
 
@@ -28,14 +23,23 @@ const SignUpPage = () => {
             userForm.append(key, newUser[key]);
         }
 
-        authAxios.signup(userForm)
-            .then(() => {
-                navigate('/')
-            })
-            .catch((err) => {
-                setErrorMessage(err.response.data.errorMessage)
-                setShow(true)
-            })
+        console.log(newUser)
+
+        if (!newUser.email || !newUser.password || !newUser.username) {
+            setErrorMessage('Email, username and password are required')
+            setShow(true)
+        }
+        else {
+            authAxios.signup(userForm)
+                .then(() => {
+                    navigate('/')
+                })
+                .catch((err) => {
+                    setErrorMessage(err.response.data.errorMessage)
+                    setShow(true)
+                })
+        }
+
     };
 
     const updateNewUser = (eventHTML) => {
@@ -55,7 +59,7 @@ const SignUpPage = () => {
         if (eventHTLM.target.checked) {
             setNewUser({ ...newUser, role: 'DRIVER' })
         } else {
-            setNewUser({ ...newUser, role: 'CLIENT', carModel: undefined })
+            setNewUser({ ...newUser, role: 'CLIENT', carModel: null, numberPlate: null })
 
         }
     }
@@ -133,6 +137,13 @@ const SignUpPage = () => {
                             name='carModel'
                             type='text'
                             placeholder='Car Model'
+                            onChange={updateNewUser}
+                        />
+                        <Form.Label>Number Plate</Form.Label>
+                        <Form.Control
+                            name='numberPlate'
+                            type='text'
+                            placeholder='Number Plate'
                             onChange={updateNewUser}
                         />
                     </Form.Group>}

@@ -1,5 +1,5 @@
 const averageStars = (reviews) => {
-    console.log(reviews)
+    if (reviews.length === 0) return 'N/D'
     const totalStars = reviews.reduce((acc, review) => {
         return acc + review;
     }, 0);

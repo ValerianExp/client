@@ -36,6 +36,7 @@ import userLocation from '../../utils/userLocation'
 import ToastComponent from '../Toast/Toast'
 import calculatePrice from '../../utils/calculatePrice'
 import { MapsContext } from '../../context/map.context'
+import TripToast from '../TripToast/TripToast'
 
 
 
@@ -46,7 +47,7 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
     const navigate = useNavigate()
 
 
-
+    const [tripShow, setTripShow] = useState(false)
     const [directionsResponse, setDirectionsResponse] = useState(null)
     const [distance, setDistance] = useState('')
     const [duration, setDuration] = useState('')
@@ -111,6 +112,7 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
             setDistance(results.routes[0].legs[0].distance.text)
             setDuration(results.routes[0].legs[0].duration.text)
             setPrice(calculatePrice(results.routes[0].legs[0].duration.text))
+            setTripShow(true)
         } catch (err) {
             console.log(err)
             if (err.code === "ZERO_RESULTS") {
@@ -215,12 +217,6 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
                     </div>
                 </div>
 
-                {duration ? <>
-                    <p>DURATION: {duration}</p>
-                    <p>DISTANCE: {distance}</p>
-                    <p>PRICE: {price} </p>
-                </> : null
-                }
 
                 <Button onClick={requestTrip} className='m-2'>
                     Request Trip
@@ -228,6 +224,7 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
 
             </Container>
             <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
+            <TripToast show={tripShow} duration={duration} distance={distance} price={price} />
         </>
 
     )

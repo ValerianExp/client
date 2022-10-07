@@ -9,6 +9,7 @@ import Map from "../MapAndSearchBar/Map"
 import userLocation from '../../utils/userLocation'
 import ClientCard from "../ClientCard/ClientCard"
 import './DriverOnTrip.css'
+import socket from '../../config/socket.config'
 
 const DriverOnTrip = () => {
     const { isLoaded, setMap } = useContext(MapsContext)
@@ -42,6 +43,7 @@ const DriverOnTrip = () => {
         const location = await userLocation()
         setCenter(location)
     }
+
     useEffect(() => {
         tripAxios.getTrip(tripId)
             .then((trip) => {
@@ -50,6 +52,18 @@ const DriverOnTrip = () => {
                 CenterMap()
             })
             .catch((err) => console.log(err))
+
+
+        socket.emit('ConnectRequest', {
+            room: tripId
+        })
+
+        socket.on('ConnectResponse', (payload) => {
+            console.log('PAYLOAD', payload)
+        })
+
+
+        return () => socket.disconnect
     }, [])
 
     if (!isLoaded || !center || !currentTrip) {
@@ -59,10 +73,13 @@ const DriverOnTrip = () => {
 
     const finishTrip = (rating) => {
         tripAxios.finishTrip(tripId, rating)
-            .then((trip) => console.log(trip))
+            .then((trip) => {
+                console.log(trip)
+                authentication()
+                navigate('/')
+            })
             .catch((err) => console.log(err))
-        authentication()
-        navigate('/')
+
 
     }
 
@@ -81,7 +98,15 @@ const DriverOnTrip = () => {
 
                     <Row>
                         <ClientCard client={currentTrip.client[0]} className={'col'} />
-                        < Button onClick={handleOpen} className={'col finishBtn'}> Finish Trip</Button >
+                        <Container className={'col'}>
+                            <Row>
+
+                                <Button onClick={handleOpen} className={' finishBtn'}> Finish Trip</Button >
+                                <Button as={'span'} className={'finishBtn'}>
+                                    <a href={`https://www.google.com/maps/search/?api=1&query=${currentTrip?.from.coordinates[1]}%2C${currentTrip?.from.coordinates[0]}`} target="_blank">Open in Maps</a>
+                                </Button>
+                            </Row>
+                        </Container>
                     </Row>
                 </Container>
             </>
@@ -93,7 +118,7 @@ const DriverOnTrip = () => {
                     <Modal.Title>Rate the Client</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    How good was your client? Rate him from 1-5★
+                    How good was your client? Rate him from 1-5★ <br />
                     <Button className="rateBtn" onClick={() => finishTrip(1)}>1</Button>
                     <Button className="rateBtn" onClick={() => finishTrip(2)}>2</Button>
                     <Button className="rateBtn" onClick={() => finishTrip(3)}>3</Button>
@@ -103,7 +128,7 @@ const DriverOnTrip = () => {
                 <Modal.Footer>
                 </Modal.Footer>
             </Modal>
-        </Container>
+        </Container >
 
     )
 

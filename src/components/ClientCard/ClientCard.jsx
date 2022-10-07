@@ -7,12 +7,17 @@ const ClientCard = ({ client }) => {
         <>
             <Card style={{ width: '50%' }}>
 
-                <Card.Img src={client.avatar} className={'cardAvatar'} />
                 <Card.Body >
-                    <Card.Title>@{client.username}</Card.Title>
-                    <Card.Text>
-                        {averageStars(client.rating)}★
-                    </Card.Text>
+                    <Row >
+                        <Card.Title>Client:</Card.Title>
+                        <Card.Img src={client.avatar} className={'cardAvatar col'} />
+                        <div className='col d-flex flex-column justify-content-center align-items-center'>
+                            <Card.Text>
+                                <b>@{client.username}</b><br />
+                                {averageStars(client.rating)}★
+                            </Card.Text>
+                        </div>
+                    </Row>
                 </Card.Body>
 
 
