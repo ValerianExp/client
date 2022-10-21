@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import ToastComponent from "../../../components/Toast/Toast";
 import { AuthContext } from "../../../context/auth.context";
 import userAxios from "../../../services/userAxios";
@@ -12,6 +12,8 @@ const EditProfilePage = () => {
     // Notif
     const [show, setShow] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (user) {
@@ -73,11 +75,13 @@ const EditProfilePage = () => {
             .editUser(userForm)
             .then((response) => {
                 console.log(response);
+                navigate('/profile')
             })
             .catch((err) => {
                 setErrorMessage(err.response.data.errorMessage)
                 setShow(true)
             })
+
     };
 
 
@@ -125,22 +129,23 @@ const EditProfilePage = () => {
                 </div>
             </div>
 
-            <form className="form-profile" >
+            <form className="form-profile d-flex align-items-center justify-content-center">
+                <button type="submit" className="btn btn-primary " onClick={submitHandle}>Done editing</button>
                 <div className="form-group">
-                    <label htmlFor="name">Name</label>
-                    <input type="text" className="form-control container" id="name" name="username" value={newUser.username} onChange={changeFieldHandle} />
+                    <label htmlFor="name" hidden>Name</label>
+                    <input type="text" className="form-control container" id="name" name="username" value={newUser.username} onChange={changeFieldHandle} hidden />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" className="form-control" id="email" name="email" value={newUser.email} onChange={changeFieldHandle} />
+                    <label htmlFor="email" hidden>Email</label>
+                    <input type="email" className="form-control" id="email" name="email" value={newUser.email} onChange={changeFieldHandle} hidden />
                 </div>
-                <div className='imageProfileLabelName'>Profile</div>
+                <div className='imageProfileLabelName' hidden>Profile</div>
                 <input
                     type='file'
                     name='avatar'
                     onChange={updateNewUserPhoto}
+                    hidden
                 />
-                <button type="submit" className="btn btn-primary" onClick={submitHandle}>Submit</button>
             </form >
 
             <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
