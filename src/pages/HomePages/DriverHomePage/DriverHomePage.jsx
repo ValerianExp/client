@@ -11,6 +11,8 @@ import { Button } from "@chakra-ui/react";
 import ToastComponent from '../../../components/Toast/Toast'
 import LoadingSpinner from "../../../components/LoadingSpinner/LoadingSpinner";
 import socket from '../../../config/socket.config'
+import passenger from '../../../images/user.png'
+import './DriverHomePage.css'
 
 
 const DriverHomePage = () => {
@@ -27,27 +29,31 @@ const DriverHomePage = () => {
 
     const [update, setUpdate] = useState(null)
 
-    const getTrips = async (loc) => {
+    const getTrips = async () => {
         try {
-            let body;
-            if (!loc) {
-                body = { ...location, maxDistance }
-                console.log('BODY', body)
-            } else {
-                body = { ...loc, maxDistance }
+            // let body;
+            // if (!loc) {
+            //     body = { ...location, maxDistance }
+            //     console.log('BODY', body)
+            // } else {
+            //     body = { ...loc, maxDistance }
+            // }
+            console.log('Length', Object.keys(location).length)
+            if (Object.keys(location).length !== 0) {
+                const body = { ...location, maxDistance }
+                console.log(body)
+                const trips = await tripAxios.getAllTrips(body)
+                const values = await Promise.all(
+                    trips.map((trip) => {
+                        return ([coordsToAddress(trip.from.coordinates), coordsToAddress(trip.to.coordinates)])
+                    }).flat()
+                )
+                const newTrips = trips.map((trip, index) => {
+                    return ({ ...trip, addFrom: values[2 * index], addTo: values[2 * index + 1] })
+                })
+                setTrips(newTrips)
+                setCalled(true)
             }
-            console.log(body)
-            const trips = await tripAxios.getAllTrips(body)
-            const values = await Promise.all(
-                trips.map((trip) => {
-                    return ([coordsToAddress(trip.from.coordinates), coordsToAddress(trip.to.coordinates)])
-                }).flat()
-            )
-            const newTrips = trips.map((trip, index) => {
-                return ({ ...trip, addFrom: values[2 * index], addTo: values[2 * index + 1] })
-            })
-            setTrips(newTrips)
-            setCalled(true)
         } catch (err) {
             console.log(err.response.data.errorMessage)
             setErrorMessage(err.response.data.errorMessage)
@@ -79,6 +85,8 @@ const DriverHomePage = () => {
             console.log('UPDATE', payload)
             setUpdate(payload)
         })
+
+
     }, [update])
 
 
@@ -125,10 +133,13 @@ const DriverHomePage = () => {
                             <ListGroup.Item key={trip._id}>
                                 <Container>
                                     <Row>
-                                        <div className={'col-3 d-flex flex-column'}>
+                                        <div className={'col-4 d-flex flex-column'}>
                                             <img src={trip.client[0].avatar} alt="" />
                                             <p>@{trip.client[0].username}</p>
                                             <p>{averageStars(trip.client[0].rating)}★</p>
+                                            <div className="d-flex">
+                                                {trip.client.length} <img src={passenger} alt="" className='passenger-icon' />
+                                            </div>
 
                                         </div>
                                         <div className="col">
@@ -147,9 +158,8 @@ const DriverHomePage = () => {
             </ListGroup>
 
 
-            <Button onClick={getTrips}>Refresh Trips</Button>
+            <Button onClick={getTrips} className='m-2'>Refresh Trips</Button>
             <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
-            {console.log('show', show)}
         </Container>
     )
 }

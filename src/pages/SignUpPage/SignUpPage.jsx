@@ -22,7 +22,7 @@ const SignUpPage = () => {
 
     const createNewUser = (eventHTML) => {
         eventHTML.preventDefault();
-
+ 
         for (const key in newUser) {
             userForm.append(key, newUser[key]);
         }

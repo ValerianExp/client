@@ -19,6 +19,15 @@ class UserAxios extends InitAxios {
         return this.axios.delete(`/${userId}`).then((response) => response.data);
     }
 
+    getAllUsers() {
+        return this.axios.get('all').then((response) => response.data)
+    }
+
+    updateFriend(userId) {
+        console.log(userId)
+        return this.axios.put(`/${userId}/friend`).then((response) => response.data)
+    }
+
     static getInstance() {
         if (!this.instance) {
             this.instance = new UserAxios();

@@ -18,6 +18,7 @@ import {
     Autocomplete,
     DirectionsRenderer,
 } from '@react-google-maps/api'
+import { Form } from 'react-bootstrap'
 // import Button from 'react-bootstrap/Button';
 
 
@@ -37,11 +38,12 @@ import ToastComponent from '../Toast/Toast'
 import calculatePrice from '../../utils/calculatePrice'
 import { MapsContext } from '../../context/map.context'
 import TripToast from '../TripToast/TripToast'
+import Multiselect from 'multiselect-react-dropdown'
+import socket from '../../config/socket.config'
 
 
 
-const MapAndSearch = (/*{ isLoaded }*/) => {
-    // TODO mver a un context 
+const MapAndSearch = () => {
     const { isLoaded, setMap } = useContext(MapsContext)
 
     const navigate = useNavigate()
@@ -63,10 +65,32 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
 
     const [price, setPrice] = useState(0)
 
+    const [passengers, setPassengers] = useState([])
+    const [update, setUpdate] = useState(null)
+
+
+
 
     useEffect(() => {
         CenterMap()
+        socket.emit('ConnectGeneral', { message: 'Connected' })
+
+        socket.on('pendingTrips', ({ newTrip }) => {
+            console.log('UPDATE', newTrip)
+            if (newTrip.client.includes(user._id.toString())) {
+                setUpdate(newTrip)
+                authentication()
+                navigate(`/trip/${newTrip._id}`)
+            }
+        })
+
+        // return () => {
+        //     socket.emit('Disconnect', { message: 'User disconnect' })
+        //     console.log('Disconnect')
+        //     socket.disconnect()
+        // }
     }, [])
+
 
     const CenterMap = async () => {
         const location = await userLocation()
@@ -92,7 +116,7 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
             // eslint-disable-next-line no-undef
             const directionsService = new google.maps.DirectionsService()
             console.log('origin', originRef.current.value)
-            console.log('destination', destiantionRef.current.valu)
+            console.log('destination', destiantionRef.current.value)
             const results = await directionsService.route({
                 origin: originRef.current.value,
                 destination: destiantionRef.current.value,
@@ -140,12 +164,17 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
     const requestTrip = () => {
         if (origin && destination) {
             if (user.credit > 0) {
+                // passenger empty just client
+                console.log(passengers)
+                const client = passengers.length === 0 ? user._id : passengers
+                console.log(client)
                 const newtrip = {
                     from_lat: origin.lat,
                     from_lng: origin.lng,
                     to_lat: destination.lat,
                     to_lng: destination.lng,
-                    client: user._id,
+                    client,
+                    // client: user._id,
                     price: price,
                 }
 
@@ -172,7 +201,12 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
         }
     }
 
-
+    const handleSelect = (selectedList, selectedItem) => {
+        const ids = selectedList.map(user => user._id)
+        setPassengers(ids)
+        console.log('PASSENGERS', selectedList)
+        // console.log(ids)
+    }
 
 
 
@@ -210,6 +244,8 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
                         Clear Route
                     </Button>
 
+                    <Multiselect options={user?.friends} displayValue='username' selectionLimit={4} onRemove={handleSelect} onSelect={handleSelect} selectedValues={[{ username: `me (${user.username})`, _id: user._id }]} placeholder='Select the other passengers' />
+
                 </div>
                 <div className='d-flex justify-content-center'>
                     <div className='m-2' style={{ width: '100vw', height: '60vh' }}>
@@ -224,7 +260,7 @@ const MapAndSearch = (/*{ isLoaded }*/) => {
 
             </Container>
             <ToastComponent errorMessage={errorMessage} show={show} setShow={setShow} />
-            <TripToast show={tripShow} duration={duration} distance={distance} price={price} />
+            <TripToast show={tripShow} duration={duration} distance={distance} price={price} passengers={passengers} setShow={setTripShow} />
         </>
 
     )

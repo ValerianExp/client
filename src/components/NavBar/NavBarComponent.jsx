@@ -5,8 +5,8 @@ import { AuthContext } from "../../context/auth.context";
 
 const NavBarComponent = () => {
     const { logOut, user, isLoading, isLoggedIn } = useContext(AuthContext)
-    console.log('USER', user)
-    console.log('Logged', isLoggedIn)
+    // console.log('USER', user)
+    // console.log('Logged', isLoggedIn)
     return (
         <Navbar bg="light" expand="lg">
             <Container>
@@ -26,6 +26,9 @@ const NavBarComponent = () => {
                         </> : <>
                             <Nav.Link as='span'>
                                 <Link to='/profile'>Profile</Link>
+                            </Nav.Link>
+                            <Nav.Link as='span'>
+                                <Link to='/users'>Friends</Link>
                             </Nav.Link>
                             <Nav.Link as='span' onClick={() => logOut()}>
                                 Log Out

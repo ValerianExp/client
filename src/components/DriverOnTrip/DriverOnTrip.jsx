@@ -63,7 +63,7 @@ const DriverOnTrip = () => {
         })
 
 
-        return () => socket.disconnect
+        // return () => socket.disconnect
     }, [])
 
     if (!isLoaded || !center || !currentTrip) {

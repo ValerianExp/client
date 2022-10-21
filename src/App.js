@@ -9,6 +9,7 @@ import OnTripPage from './pages/OnTripPage/OnTripPage';
 import EditProfilePage from './pages/ProfilePage/EditProfile/EditProfilePage';
 import NotFoundPage from './pages/NotFound/NotFoundPage';
 import BuyCoins from './pages/BuyCoins/BuyCoins';
+import Friends from './pages/Friends/friends';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path='/trip/:id' element={<OnTripPage />} />'
         <Route path='/profile/delete' element={<HomePage />} />
         <Route path='/buyCoins' element={<BuyCoins />} />
+        <Route path='/users' element={<Friends />} />
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </div>

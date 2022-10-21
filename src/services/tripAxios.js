@@ -11,7 +11,8 @@ class TripAxios extends InitAxios {
 
     getAllTrips(body) {
         const { latDriver, lngDriver, maxDistance } = body
-        console.log('COORDS', { latDriver: 40.4165, lngDriver: -3.7026, maxDistance })
+        // console.log('COORDS', { latDriver: latDriver, lngDriver: lngDriver, maxDistance })
+        // console.log('URL', `/all?latDriver=${latDriver}&lngDriver=${lngDriver}&maxDistance=${maxDistance}`)
         return this.axios.get(`/all?latDriver=${latDriver}&lngDriver=${lngDriver}&maxDistance=${maxDistance}`).then((response) => response.data)
     }
 
@@ -30,6 +31,15 @@ class TripAxios extends InitAxios {
     rateDriver(tripId, rating) {
         return this.axios.put(`/${tripId}/ratedriver?rating=${rating}`).then((response) => response.data)
     }
+
+    acceptTrip(tripId) {
+        return this.axios.put(`/${tripId}/accept`).then((response) => response.data)
+    }
+
+    cancelTrip(tripId) {
+        return this.axios.delete(`/${tripId}/delete`).then((response) => response.data)
+    }
+
 
     static getInstance() {
         if (!this.instance) {

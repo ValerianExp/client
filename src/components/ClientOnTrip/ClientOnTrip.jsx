@@ -10,6 +10,9 @@ import LoadingSpinner from "../LoadingSpinner/LoadingSpinner"
 import socket from '../../config/socket.config'
 import { AuthContext } from "../../context/auth.context"
 import DriverCard from "../DriverCard/DriverCard"
+import AcceptTripModal from "../AcceptTripModal/AcceptTripModal"
+import WaitingForDriver from "../waitingForDriver/waitingForDriver"
+import WaitingForPassengers from "../WaitingForPassengers/WaitingForPassengers"
 
 const ClientOnTrip = () => {
     const [trip, setTrip] = useState(null)
@@ -19,20 +22,14 @@ const ClientOnTrip = () => {
     const [loadingTrip, setLoadingTrip] = useState(true)
     const { authentication } = useContext(AuthContext)
     const [socketInfo, setSocketInfo] = useState(null)
+    const [showAccept, setShowAccept] = useState(false);
+    const { user } = useContext(AuthContext)
+
+
 
 
     useEffect(() => {
-        tripAxios.getTrip(tripId)
-            .then((currentTrip) => {
-                console.log('CurrentTrip', currentTrip)
-                setTrip(currentTrip)
-                setShow(currentTrip.isFinished)
-                setLoadingTrip(false)
-            })
-            .catch((err) => {
-                console.log(err.response.data)
 
-            })
         // socket.connect()
         socket.emit('ConnectRequest', {
             room: tripId
@@ -42,14 +39,50 @@ const ClientOnTrip = () => {
             console.log('CONNECT PAYLOAD', payload)
         })
 
-        socket.on('RefreshTrip', (payload) => {
-            console.log('REFRESH PAYLOAD', payload)
+        socket.on('UpdateTrip', (payload) => {
+            console.log('UPDATE PAYLOAD', payload)
+            if (payload.message) {
+                // socket.broadcast.emit('tripCancel', { message: 'A trip has been cancelled' })
+                console.log('MESSAGE ', payload.message)
+                authentication()
+                navigate('/')
+            }
             setTrip(payload)
             setShow(payload.isFinished)
         })
 
+        socket.on('RefreshTrip', (payload) => {
+            console.log('PAYLOAD', payload)
+            if (payload.message) {
+                // socket.broadcast.emit('tripCancel', { message: 'A trip has been cancelled' })
+                console.log('MESSAGE ', payload.message)
+                authentication()
+                navigate('/')
+            }
+            setTrip(payload.trip)
+            setShow(payload.trip.isFinished)
+        })
 
-        return () => socket.disconnect
+
+        console.log('TRIPID: ', tripId)
+        tripAxios.getTrip(tripId)
+            .then((currentTrip) => {
+                console.log('CurrentTrip', currentTrip)
+                setTrip(currentTrip)
+                setShow(currentTrip.isFinished)
+                setLoadingTrip(false)
+                setShowAccept(true)
+            })
+            .catch((err) => {
+                console.log(err.response.data)
+
+            })
+
+        // return () => {
+        //     socket.emit('Disconnect', { message: 'User disconnect' })
+        //     console.log('Disconnect')
+        //     socket.disconnect()
+        // }
     }, [])
 
     const rateDriver = async (rating) => {
@@ -59,22 +92,50 @@ const ClientOnTrip = () => {
     }
 
     const handleClose = () => setShow(false);
-    console.log('Current Trip', trip)
 
+    const cancelTrip = (id) => {
+        console.log('Cancel trip')
+        tripAxios.cancelTrip(id)
+            .then(() => {
+                authentication()
+                console.log('Navigate')
+                navigate('/')
+            }
+            )
+            .catch((err) => console.log(err))
+    }
+
+    const acceptTrip = () => {
+        console.log('Trip accepted')
+        tripAxios
+            .acceptTrip(trip._id)
+            .then(({ trip }) => {
+                console.log('Response trip', trip)
+                setShowAccept(false)
+                setTrip(trip)
+
+            })
+            .catch((err) => console.log(err))
+    }
+
+    // console.log('Boolean: ', trip?.passengers.includes(user?._id.toString()))
+    // console.log('clients ', trip?.passengers)
+    // console.log('User ', user)
+    console.log('TRIP', trip)
     return (
         <div>{
             loadingTrip ? <LoadingSpinner />
                 :
-                trip && trip.driver.length === 0
-                    ? <div style={{ height: '70vh' }} className="d-flex flex-column justify-content-center align-items-center ">
-                        <p className={'m-5'} >Wating for the driver</p>
-                        <GrowSpinner />
-                    </div>
-                    : !trip.isFinished && <div className="driverOnWay">
-                        <p>Driver is on the way</p>
-                        <img src={AutoGif} alt="" className="w-25" />
-                        <DriverCard driver={trip.driver[0]} />
-                    </div>
+                trip && !trip.message && trip.passengers.length !== trip.client.length
+                    ? <WaitingForPassengers tripId={trip._id} cancelTrip={cancelTrip} trip={trip} />
+                    : trip.driver.length === 0
+                        ? <WaitingForDriver tripId={trip._id} cancelTrip={cancelTrip} />
+                        : !trip.isFinished && <div className="driverOnWay">
+                            <p>Driver is on the way</p>
+                            <img src={AutoGif} alt="" className="w-25" />
+                            <DriverCard driver={trip.driver[0]} />
+                        </div>
+            // : <div>Trip not found</div>
         }
 
             <Modal show={show} onHide={handleClose}>
@@ -92,6 +153,10 @@ const ClientOnTrip = () => {
                 <Modal.Footer>
                 </Modal.Footer>
             </Modal>
+            {trip && !trip.message && !trip?.passengers.includes(user?._id.toString()) &&
+                // !trip?.client.includes(user._id.toString()) &&
+                < AcceptTripModal trip={trip} showAccept={showAccept} setShowAccept={setShowAccept} cancelTrip={cancelTrip} acceptTrip={acceptTrip} />
+            }
 
         </div>
     )

@@ -41,6 +41,10 @@ const ProfilePage = () => {
                                                     <div className="counter">{user?.oldtrips?.length}</div>
                                                     <div className="heading">Viajes</div>
                                                 </li>
+                                                <li>
+                                                    <div className="counter">{user?.credit}</div>
+                                                    <div className="heading">Credit</div>
+                                                </li>
                                             </ul>
                                         </div>
                                         <div className="col-xl-4 col-md-4 d-flex justify-content-center" >
